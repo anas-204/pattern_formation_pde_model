@@ -175,8 +175,7 @@ print(f"Number of time steps: {len(sol.t)}")
 
 
 #------------------------------------------------------------------------------------------------------
-# Accuracy calculation (added section)
-# ======================================================================
+# Accuracy calculation 
 # Book results at t = 5 hours (from machine learning code)
 book_results = {
     "0.0": {"u1": 1.034e7, "u2": 2.480e-6, "u3": 3.449e-4},
@@ -236,14 +235,9 @@ print("="*80 + "\n")
 
 #------------------------------------------------------------------------------------------------------
 
-
-
 dx = L / nx  # Control volume size
 x_centers = np.linspace(dx/2, L - dx/2, nx)  # Cell centers
 x_faces = np.linspace(0, L, nx + 1)           # Cell faces
-
-
-
 
 # Initialize state vector
 y0 = np.zeros(3 * nx)

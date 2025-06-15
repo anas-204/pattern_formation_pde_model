@@ -228,11 +228,11 @@ def print_last_state(u_vals: List[List[float]], x_vals: np.ndarray) -> None:
 
         print(f"{x_vals[j]:.4f}\t\t{u1_val:.4e}\t\t{u2_val:.4e}\t\t{u3_val:.4e}")
 
-def plot_results(storage: MemoryStorage, x_vals: np.ndarray, no_rows: int, no_cols: int, fig_size: Tuple[int, int]) -> None:
+def plot_results(data: List[List[List[float]]], x_vals: np.ndarray, time_points: np.ndarray, no_rows: int, no_cols: int, fig_size: Tuple[int, int]) -> None:
     """Plot the results from the storage object in subplots as one figure.
 
     Args:
-        storage (MemoryStorage): The storage object containing the state data.
+        data (List[List[List[float]]]): The list of u1, u2, and u3 values.
         x_vals (np.ndarray): The array of x values.
         no_rows (int): Number of rows in the subplot grid.
         no_cols (int): Number of columns in the subplot grid.
@@ -241,20 +241,17 @@ def plot_results(storage: MemoryStorage, x_vals: np.ndarray, no_rows: int, no_co
 
     fig, axes = plt.subplots(no_rows, no_cols, figsize=fig_size)
 
-    # Get time points in seconds from storage
-    time_points: np.ndarray = np.array(storage.times)
-
     for i, (name, ax) in enumerate(zip(["u1", "u2", "u3"], axes)):
         for t_index in range(0, len(time_points)):
             # Flatten the data arrays to 1D
-            data: np.ndarray = np.array(storage.data[t_index][i].data).flatten()
+            u_data: np.ndarray = np.array(data[t_index][i]).flatten()
 
             # Ensure x_vals and data have same length
-            if len(x_vals) != len(data):
-                x_vals: np.ndarray = np.linspace(0, 1, len(data))  # Auto-adjust x_vals to match data
+            if len(x_vals) != len(u_data):
+                x_vals: np.ndarray = np.linspace(0, 1, len(u_data))  # Auto-adjust x_vals to match data
 
-            ax.plot(x_vals, data, alpha=1.0,
-                    label=f"t={time_points[t_index] / 3600:.1f} hrs")
+            ax.plot(x_vals, u_data, alpha=1.0,
+                    label=f"t={time_points[t_index]:.1f} hrs")
 
         ax.set_title(f"Evolution of {name}")
         ax.set_xlabel("Position x (cm)")
@@ -332,6 +329,7 @@ solver: Type[ScipySolver] = ScipySolver  # More robust solver for stiff systems
 bounds: Tuple[float, float] = (0, 1)
 
 # Define reqiured paremeters for comparing results
+time_points: np.ndarray = np.array([0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]) # t values
 analysis_points: np.ndarray = np.array([0.0, 0.2, 0.4, 0.6, 0.8, 1.0]) # x values = 0, 0.2, 0.4, 0.6, 0.8, 1 cm
 
 # Book results at t = 5 hours
@@ -381,7 +379,15 @@ print_last_state(u_vals, x_vals)
 
 """### Plot Results"""
 
-plot_results(storage, x_vals, no_rows=1, no_cols=3, fig_size=(18, 6))
+data: List[List[List[float]]] = [0] * len(time_points)
+for t_index in range(0, len(time_points)):
+    # Flatten the data arrays to 1D
+    u1: np.ndarray = np.array(storage.data[t_index][0].data).flatten()
+    u2: np.ndarray = np.array(storage.data[t_index][1].data).flatten()
+    u3: np.ndarray = np.array(storage.data[t_index][2].data).flatten()
+    data[t_index] = [u1, u2, u3]
+
+plot_results(data, x_vals, time_points, no_rows=1, no_cols=3, fig_size=(18, 6))
 
 """### Comparing between learning-based results and chapter results
 
@@ -446,7 +452,15 @@ print_last_state(u_vals_h_refine, x_vals_h_refine)
 
 """#### Plot Results"""
 
-plot_results(storage_h_refine, x_vals_h_refine, no_rows=1, no_cols=3, fig_size=(18, 6))
+data_h_refine: List[List[List[float]]] = [0] * len(time_points)
+for t_index in range(0, len(time_points)):
+    # Flatten the data arrays to 1D
+    u1: np.ndarray = np.array(storage_h_refine.data[t_index][0].data).flatten()
+    u2: np.ndarray = np.array(storage_h_refine.data[t_index][1].data).flatten()
+    u3: np.ndarray = np.array(storage_h_refine.data[t_index][2].data).flatten()
+    data_h_refine[t_index] = [u1, u2, u3]
+
+plot_results(data_h_refine, x_vals_h_refine, time_points, no_rows=1, no_cols=3, fig_size=(18, 6))
 
 """#### Comparing between results before and after the h refinement"""
 
@@ -467,7 +481,7 @@ print_relative_errors(("Simulation before h refinement", sim_results), ("Simulat
 
 Unfortunately, as of now, `py-pde` does not offer built-in 6th-order accurate derivative stencils directly via its public API.
 
-**But we can define our own functions.**
+**But we can define new functions to do that.**
 
 ##### Define functions to calculate sixth-order FD approximations
 """
@@ -586,34 +600,15 @@ print_last_state(u_vals_p_refine, x_vals_p_refine)
 
 """#### Plot the results"""
 
-fig, axes = plt.subplots(1, 3, figsize=(18, 6))
+data_p_refine: List[List[List[float]]] = [0] * len(time_points)
+for t_index in range(0, len(time_points)):
+    # Flatten the data arrays to 1D
+    u1: np.ndarray = np.array(sol6.y[0:number_of_points_p_refine, t_index]).flatten()
+    u2: np.ndarray = np.array(sol6.y[number_of_points_p_refine:2*number_of_points_p_refine, t_index]).flatten()
+    u3: np.ndarray = np.array(sol6.y[2*number_of_points_p_refine:, t_index]).flatten()
+    data_p_refine[t_index] = [u1, u2, u3]
 
-for i, (name, ax) in enumerate(zip(["u1", "u2", "u3"], axes)):
-    for t_index in range(0, len(t_eval)):
-        data: np.ndarray = np.zeros(number_of_points_p_refine)
-
-        if i == 0:
-            data = sol6.y[0:number_of_points_p_refine, t_index]
-        elif i == 1:
-            data = sol6.y[number_of_points_p_refine:2*number_of_points_p_refine, t_index]
-        else:
-            data = sol6.y[2*number_of_points_p_refine:, t_index]
-
-        # Ensure x_vals and data have same length
-        if len(x_vals_p_refine) != len(data):
-            x_vals_p_refine: np.ndarray = np.linspace(0, 1, len(data))  # Auto-adjust x_vals to match data
-
-        ax.plot(x_vals_p_refine, data, alpha=1.0,
-                label=f"t={t_eval[t_index] / 3600:.1f} hrs")
-
-    ax.set_title(f"Evolution of {name}")
-    ax.set_xlabel("Position x (cm)")
-    ax.set_ylabel(name + "(x,t), t=0,0.5,...,5")
-    ax.legend()
-    ax.grid(True)
-
-plt.tight_layout()
-plt.show()
+plot_results(data_p_refine, x_vals_p_refine, time_points, no_rows=1, no_cols=3, fig_size=(18, 6))
 
 """#### Comparing between results before and after the p refinement"""
 

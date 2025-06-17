@@ -85,7 +85,12 @@ def second_derivative(u, dx):
     d2u[0] = (2*u[1] - 2*u[0]) / dx**2
     d2u[-1] = (2*u[-2] - 2*u[-1]) / dx**2
     return d2u</code></pre>
-      <p>See <a href="https://github.com/your-repo-path#finite-difference">full code</a>.</p>
+      <p>See <a href="https://github.com/anas-204/pattern_formation_pde_model/tree/main/Solutions/Finite-Element-Method">full code</a>.</p>
+      <div class="row">
+        <div class="col-md-4"><img src="../Solutions/Finite-Element-Method/imgs/cell_density.png" class="img-fluid" alt="Cell Density"></div>
+        <div class="col-md-4"><img src="../Solutions/Finite-Element-Method/imgs/chemoattractant_conc.png" class="img-fluid" alt="Chemoattractant Concentration"></div>
+        <div class="col-md-4"><img src="../Solutions/Finite-Element-Method/imgs/stimulant_conc.png" class="img-fluid" alt="Stimulant Concentration"></div>
+      </div>
     </div>
   </section>
 
@@ -101,6 +106,11 @@ def compute_flux(u, dx):
     # ... upwind or central flux
     return flux</code></pre>
       <p>See <a href="https://github.com/anas-204/pattern_formation_pde_model/tree/main/Solutions/Numerical%20Solutions/Finite_Volume">full code</a>.</p>
+      <div class="row">
+        <div class="col-md-4"><img src="../Solutions/Numerical Solutions/Finite_Volume/image_solutions/Cell_Density_$u_1(x,t)$_comparison.png" class="img-fluid" alt="FV Solution"></div>
+        <div class="col-md-4"><img src="../Solutions/Numerical Solutions/Finite_Volume/image_solutions/Chemoattractant_$u_2(x,t)$_comparison.png" class="img-fluid" alt="FV Error"></div>
+        <div class="col-md-4"><img src="../Solutions/Numerical Solutions/Finite_Volume/image_solutions/Stimulant_$u_3(x,t)$_comparison.png" class="img-fluid" alt="FV Runtime"></div>
+      </div>
     </div>
   </section>
 
@@ -109,7 +119,7 @@ def compute_flux(u, dx):
     <div class="container">
       <h2>Machine Learning Approach</h2>
       <p><strong>Key Concepts:</strong> PINNs, operator learning, training dataset.</p>
-      <h5>Architecture Overview:</h5>
+<h5>Architecture Overview:</h5>
       <ul>
         <li>Inputs: Spatial coordinate, time.</li>
         <li>Network: 4-layer MLP with 64 neurons/layer, tanh activation.</li>
@@ -122,6 +132,10 @@ model = PINN(layers=[2,64,64,64,1])
 # Training loop
 </code></pre>
       <p>See <a href="https://github.com/anas-204/pattern_formation_pde_model/tree/main/Solutions/Machine%20Learning%20Solution">full code</a>.</p>
+    </div>
+      <div class="row text-center
+        <div class="col-md-4"><img src="../Solutions/Machine Learning Solution/deliverables/evolution_of_u1_u2_u3.png" class="img-fluid" alt="ML Prediction"></div>
+      </div>
     </div>
   </section>
 

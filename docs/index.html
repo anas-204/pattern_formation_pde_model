@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>3-Method PDE Solver Project</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+  <style>
+    body { scroll-behavior: smooth; }
+    section { padding: 60px 0; }
+    .nav-link { cursor: pointer; }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">PDE Solver Project</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="#overview">Overview</a></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#methods" id="methodsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Methods</a>
+            <ul class="dropdown-menu" aria-labelledby="methodsDropdown">
+              <li><a class="dropdown-item" href="#finite-difference">Finite Difference</a></li>
+              <li><a class="dropdown-item" href="#finite-volume">Finite Volume</a></li>
+              <li><a class="dropdown-item" href="#machine-learning">Machine Learning</a></li>
+            </ul>
+          </li>
+          <li class="nav-item"><a class="nav-link" href="#results">Results</a></li>
+          <li class="nav-item"><a class="nav-link" href="#code">Code</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contributors">Contributors</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="overview" class="bg-light text-center">
+    <div class="container">
+      <h1 class="display-4">PDE Solver: 3 Approaches</h1>
+      <p class="lead">Comparing Finite Difference, Finite Volume, and Machine Learning techniques to solve reaction-diffusion PDEs.</p>
+      <a href="#methods" class="btn btn-primary btn-lg">Explore Methods</a>
+    </div>
+  </section>
+
+  <!-- Methods Sections -->
+  <section id="methods">
+    <div class="container">
+      <h2 class="mb-4">Methods Overview</h2>
+      <p>We implemented three different approaches to solve our PDE system:</p>
+      <div class="row gy-4">
+        <div class="col-md-4 text-center">
+          <h3>Finite Difference</h3>
+          <p>Classic central difference scheme for spatial derivatives and implicit time stepping.</p>
+          <a href="#finite-difference" class="btn btn-outline-primary">Details</a>
+        </div>
+        <div class="col-md-4 text-center">
+          <h3>Finite Volume</h3>
+          <p>Conservative flux-based discretization ensuring local conservation.</p>
+          <a href="#finite-volume" class="btn btn-outline-primary">Details</a>
+        </div>
+        <div class="col-md-4 text-center">
+          <h3>Machine Learning</h3>
+          <p>Data-driven approach using neural networks to approximate solution operators.</p>
+          <a href="#machine-learning" class="btn btn-outline-primary">Details</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Finite Difference -->
+  <section id="finite-difference" class="bg-white">
+    <div class="container">
+      <h2>Finite Difference Method</h2>
+      <p><strong>Key Concepts:</strong> Central differences, Neumann boundary conditions, BDF time integrator.</p>
+      <h5>Implementation Snippet:</h5>
+      <pre><code class="language-python"># Second derivative with Neumann BCs
+def second_derivative(u, dx):
+    d2u = np.zeros_like(u)
+    d2u[1:-1] = (u[2:] - 2*u[1:-1] + u[:-2]) / dx**2
+    d2u[0] = (2*u[1] - 2*u[0]) / dx**2
+    d2u[-1] = (2*u[-2] - 2*u[-1]) / dx**2
+    return d2u</code></pre>
+      <p>See <a href="https://github.com/your-repo-path#finite-difference">full code</a>.</p>
+    </div>
+  </section>
+
+  <!-- Finite Volume -->
+  <section id="finite-volume" class="bg-light">
+    <div class="container">
+      <h2>Finite Volume Method</h2>
+      <p><strong>Key Concepts:</strong> Control volumes, flux balance, upwinding.</p>
+      <h5>Implementation Snippet:</h5>
+      <pre><code class="language-python"># Compute fluxes at cell faces
+def compute_flux(u, dx):
+    flux = np.zeros_like(u)
+    # ... upwind or central flux
+    return flux</code></pre>
+      <p>See <a href="https://github.com/anas-204/pattern_formation_pde_model/tree/main/Solutions/Numerical%20Solutions/Finite_Volume">full code</a>.</p>
+    </div>
+  </section>
+
+  <!-- Machine Learning -->
+  <section id="machine-learning">
+    <div class="container">
+      <h2>Machine Learning Approach</h2>
+      <p><strong>Key Concepts:</strong> PINNs, operator learning, training dataset.</p>
+      <h5>Architecture Overview:</h5>
+      <ul>
+        <li>Inputs: Spatial coordinate, time.</li>
+        <li>Network: 4-layer MLP with 64 neurons/layer, tanh activation.</li>
+        <li>Loss: PDE residual + boundary & initial condition enforcement.</li>
+      </ul>
+      <h5>Training Snippet:</h5>
+      <pre><code class="language-python"># Define PINN
+model = PINN(layers=[2,64,64,64,1])
+# Loss: residual + BC + IC
+# Training loop
+</code></pre>
+      <p>See <a href="https://github.com/anas-204/pattern_formation_pde_model/tree/main/Solutions/Machine%20Learning%20Solution">full code</a>.</p>
+    </div>
+  </section>
+
+  <!-- Results -->
+  <section id="results" class="bg-white">
+    <div class="container">
+      <h2>Results & Comparisons</h2>
+      <p>Below are sample solution profiles and performance metrics.</p>
+      <div class="row gy-4">
+        <div class="col-md-6">
+          <h5>Solution Profiles</h5>
+          <img src="figures/u1_solution.png" alt="Cell Density Profiles" class="img-fluid">
+        </div>
+        <div class="col-md-6">
+          <h5>Runtime Comparison</h5>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Method</th><th>Runtime (s)</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Finite Difference</td><td>12.3</td></tr>
+              <tr><td>Finite Volume</td><td>15.8</td></tr>
+              <tr><td>Machine Learning</td><td>120.5</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Code -->
+  <section id="code" class="bg-light">
+    <div class="container">
+      <h2>Code Repository</h2>
+      <p>All source code is available on GitHub:</p>
+      <a href="https://github.com/anas-204/pattern_formation_pde_model" class="btn btn-dark">View on GitHub</a>
+    </div>
+  </section>
+
+  <!-- Contributors -->
+  <section id="contributors" class="bg-white">
+    <div class="container text-center">
+      <h2>Contributors</h2>
+      <p>Thanks to everyone who contributed:</p>
+      <ul class="list-inline">
+        <li class="list-inline-item">Mazen Atef Awad Mohamed Atlam</li>
+        <li class="list-inline-item">Anas Mohamed Abdelaziz Elsheikh</li>
+        <li class="list-inline-item">Ahmed Abdelghaffar Mostafa Shehab</li>
+        <li class="list-inline-item">Mohamed Ashraf Abdelhamid Hagras</li>
+        <li class="list-inline-item">Sherif Mohamed Mahmoud Elgendy</li>
+        <li class="list-inline-item">Ziad Ramadan Mohamed Mohamed</li>
+        <li class="list-inline-item">Mostafa Ashraf Mostafa Abdelrahim</li>
+        <li class="list-inline-item">Seif Samaan Ghaly Atia</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white text-center py-4">
+    <div class="container">
+      <p class="mb-0">&copy; 2025 PDE Solver Project. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+</body>
+</html>

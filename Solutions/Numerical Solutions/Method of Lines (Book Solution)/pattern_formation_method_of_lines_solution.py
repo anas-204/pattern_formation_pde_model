@@ -148,3 +148,63 @@ if __name__ == "__main__":
         atol=1e-6,
         rtol=1e-6
     )
+
+    # Print computational statistics
+    print(f"Solution computed with {sol.nfev} function evaluations")
+    print(f"Number of time steps: {len(sol.t)}")
+
+    # Extract solutions
+    u1_sol = sol.y[:nx]
+    u2_sol = sol.y[nx:2 * nx]
+    u3_sol = sol.y[2 * nx:3 * nx]
+
+    # Print last state results
+
+    u1_last_state = u1_sol[:, -1]
+    u2_last_state = u2_sol[:, -1]
+    u3_last_state = u3_sol[:, -1]
+
+    print(f"\nVerifying with storage data for the final state:")
+    print("x (cm)\t\tu1 (cells/ml)\t\tu2 (M)\t\t\tu3 (M)")
+    print("-" * 60)
+
+    # Print values from storage
+    for j in range(len(x_vals)):
+        u1_val = np.array(u1_last_state).flatten()[j]
+        u2_val = np.array(u2_last_state).flatten()[j]
+        u3_val = np.array(u3_last_state).flatten()[j]
+
+        print(f"{x_vals[j]:.4f}\t\t{u1_val:.4e}\t\t{u2_val:.4e}\t\t{u3_val:.4e}")
+
+    # Plot results
+    plt.figure(figsize=(18, 6))
+
+    plt.subplot(1, 3, 1)
+    for i in range(0, len(sol.t)):  # Plot every other time point
+        plt.plot(x_vals, u1_sol[:, i], label=f't={sol.t[i] / 3600:.1f}h')
+    plt.title('Evolution of u1')
+    plt.xlabel("Position x (cm)")
+    plt.ylabel("u1(x,t), t=0,0.5,...,5")
+    plt.legend()
+    plt.grid(True)
+
+    plt.subplot(1, 3, 2)
+    for i in range(0, len(sol.t)):
+        plt.plot(x_vals, u2_sol[:, i], label=f't={sol.t[i] / 3600:.1f}h')
+    plt.title('Evolution of u2')
+    plt.xlabel("Position x (cm)")
+    plt.ylabel("u2(x,t), t=0,0.5,...,5")
+    plt.legend()
+    plt.grid(True)
+
+    plt.subplot(1, 3, 3)
+    for i in range(0, len(sol.t)):
+        plt.plot(x_vals, u3_sol[:, i], label=f't={sol.t[i] / 3600:.1f}h')
+    plt.title('Evolution of u3')
+    plt.xlabel("Position x (cm)")
+    plt.ylabel("u3(x,t), t=0,0.5,...,5")
+    plt.legend()
+    plt.grid(True)
+
+    plt.tight_layout()
+    plt.show()

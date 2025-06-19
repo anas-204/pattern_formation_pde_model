@@ -21,7 +21,6 @@ from pde import PDEBase, ScalarField, FieldCollection, CartesianGrid, ScipySolve
 from pde.grids.base import GridBase
 from pde.solvers.base import SolverBase
 
-from scipy.integrate import solve_ivp
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -274,32 +273,37 @@ def print_relative_errors(true_values: Tuple[str, Dict[str, Dict[str, float]]], 
     print(f"X (cm)\t\tField\t\t{approximations[0]}\t\t{true_values[0]}\t\tRelative Error")
     print("-" * 105)
 
-    min_error: float = float("inf")
-    max_error: float = float("-inf")
-    min_error_field: str = ""
-    max_error_field: str = ""
-    min_error_x: str = ""
-    max_error_x: str = ""
+    x_values: List[float] = list(map(float, relative_errors.keys()))
+    step: float = float((x_values[-1] - x_values[0]) / (len(x_values) - 1))
+
+    u_errors: Dict[str, np.ndarray] = {
+        "u1": np.zeros(len(x_values)),
+        "u2": np.zeros(len(x_values)),
+        "u3": np.zeros(len(x_values))
+    }
 
     for x_val, u_vals in relative_errors.items():
         print(f"x = {x_val}")
 
         for field, error in u_vals.items():
-            if error < min_error:
-                min_error = error
-                min_error_field = field
-                min_error_x = x_val
-            if error > max_error:
-                max_error = error
-                max_error_field = field
-                max_error_x = x_val
-
+            # x = 0.0, 0.2 ,0.4, 0.6, 0.8, 1
+            # i = 0  , 1   ,2  , 3  , 4  , 5
+            x_index: int = int(np.ceil(float(x_val) / step)) # Ciel any fractions
+            u_errors[field][x_index] = error
             print(f"\t\t{field}\t\t{approximations[1][x_val][field]:.4e}\t\t\t{true_values[1][x_val][field]:.4e}\t\t{error:.2f}%")
 
     print("-" * 105)
     print("\nError Analysing:")
-    print(f"Maximum error: {max_error_field} at x = {max_error_x} with a value of {max_error:.2f}%")
-    print(f"Minimum error: {min_error_field} at x = {min_error_x} with a value of {min_error:.2f}%")
+
+    max_errors: Dict[str, np.float64] = {}
+    min_errors: Dict[str, np.float64] = {}
+
+    for field in u_errors.keys():
+        max_errors[field]: np.float64 = np.max(u_errors[field])
+        min_errors[field]: np.float64 = np.min(u_errors[field])
+
+        print(f"\nMaximum error of {field}: {max_errors[field]:.2f}%")
+        print(f"Minimum error of {field}: {min_errors[field]:.2f}%")
 
 """### Parameter Definitions"""
 
@@ -361,10 +365,12 @@ x_vals: np.ndarray = np.linspace(bounds[0], bounds[1], number_of_points)
 # Set up initial state
 initial_state: FieldCollection = set_up_initial_state(grid, x_vals)
 
-"""### Solve and Print Final State Data"""
+"""### Solve the System"""
 
 # Solve the PDE system
 solve_system(pde_system, solver, storage, initial_state, t_range=18000, dt=1800)
+
+"""### Print Final State Results"""
 
 # Extract data
 last_state_index = len(storage.times) - 1 # last index at t = 5 h
@@ -405,11 +411,12 @@ print_relative_errors(("Book Results", book_results), ("Simulation Results", sim
 
 """#### Time Metrics
 
-| Metric             | learning-based Simulation          | Book Implementation |
-| ------------------ | ------------------------------- | ---------------------------- |
-| *Runtime*        | 6.922 s (real)                  | Not reported                 |
-| *Function Evals* | 10 solver steps                 | 831 ncall                  |
-| *Problem Size*   | 153 ODEs (3 fields × 51 points) | 153 ODEs                     |
+| Metric | learning-based Simulation | Book Implementation |
+| ------ | ------------------------- | ------------------- |
+| *Runtime in seconds (real)* | 6.922 | 1.826 |
+| *Problem Size (# of Equations)* | 153 ODEs (3 fields x 51 points) | 153 ODEs |
+| *Time per Equations (s/equ)* | 0.0452 | 0.0119 |
+| *Function Evaluations* | y | 1052 |
 
 ## Suggestions for improvements and future work
 
@@ -434,10 +441,12 @@ x_vals_h_refine: np.ndarray = np.linspace(bounds[0], bounds[1], number_of_points
 # Set up initial state
 initial_state_h_refine: FieldCollection = set_up_initial_state(grid_h_refine, x_vals_h_refine)
 
-"""#### Solve and Print Final State Data"""
+"""#### Solve the System"""
 
 # Solve the PDE system
 solve_system(pde_system_h_refine, solver, storage_h_refine, initial_state_h_refine, t_range=18000, dt=1800)
+
+"""#### Print Final State Results"""
 
 # Extract data
 last_state_index_h_refine = len(storage_h_refine.times) - 1 # last index at t = 5 h

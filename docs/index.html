@@ -1,204 +1,1233 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>3-Method PDE Solver Project</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
-  <style>
-    body { scroll-behavior: smooth; }
-    section { padding: 60px 0; }
-    .nav-link { cursor: pointer; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pattern Formation PDE Analysis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #1a252f;
+            --success: #27ae60;
+            --code-bg: #2d2d2d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: var(--light);
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            font-weight: 300;
+            max-width: 800px;
+            margin: 0 auto 1.5rem;
+        }
+
+        nav {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: var(--primary);
+            text-decoration: none;
+            padding: 1rem 1.5rem;
+            display: block;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        nav a:hover {
+            color: var(--secondary);
+            background-color: #f8f9fa;
+        }
+
+        nav a:hover::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: var(--secondary);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        section {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: var(--primary);
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        h2 i {
+            margin-right: 10px;
+            color: var(--secondary);
+        }
+
+        h3 {
+            color: var(--dark);
+            margin: 1.5rem 0 1rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        .authors {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .author {
+            background: rgba(255,255,255,0.1);
+            padding: 0.8rem 1.2rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .author:hover {
+            transform: scale(1.05);
+        }
+
+        .author-name {
+            font-weight: 500;
+        }
+
+        .author-email {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .authors a {
+            text-decoration: none;
+            color: white;
+        }
+
+        .abstract {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--secondary);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .keywords {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .keyword {
+            background-color: var(--secondary);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .equation {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .equation-title {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .model-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .model-card {
+            flex: 1;
+            min-width: 300px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: grid;
+            grid-template-rows: auto auto auto;
+            align-content: space-evenly;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .result-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: center;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 500;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .future-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .future-card {
+            background: linear-gradient(to bottom right, #f8f9fa, #e9ecef);
+            border-radius: 8px;
+            padding: 1.5rem;
+            border-left: 4px solid var(--success);
+        }
+
+        .future-card h3 {
+            color: var(--success);
+            display: flex;
+            align-items: center;
+        }
+
+        .future-card h3 i {
+            margin-right: 10px;
+        }
+
+        .acknowledgment {
+            color: #333;
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        footer {
+            background-color: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-top: 2rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-content h3 {
+            color: white;
+        }
+
+        .social-links {
+            display: flex;
+            align-content: center;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .social-links a {
+            color: white;
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .social-links a:hover {
+            transform: translateY(-5px);
+            color: var(--secondary);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .nav-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            nav a {
+                padding: 0.8rem;
+            }
+
+            section {
+                padding: 1.5rem;
+            }
+        }
+
+        .equation-display {
+            font-size: 1.1rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        .equation-title {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+            text-align: center;
+        }
+
+        .math-table {
+            width: 100%;
+            margin: 1.5rem 0;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .math-table th, .math-table td {
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 1px solid #dee2e6;
+            vertical-align: top;
+        }
+
+        .math-table th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 500;
+            width: 30%;
+        }
+
+        .implementation-steps {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid var(--secondary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .step-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .step-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 0.8rem;
+        }
+
+        .step-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background-color: var(--secondary);
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 15px;
+            font-size: 1.1rem;
+        }
+
+        .step-card h4 {
+            color: var(--primary);
+            margin: 0;
+            font-size: 1.25rem;
+        }
+
+        .step-details {
+            padding-left: 1.5rem;
+            margin-bottom: 0;
+        }
+
+        .step-details li {
+            margin-bottom: 0.8rem;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .step-details li:before {
+            content: "•";
+            color: var(--secondary);
+            font-weight: bold;
+            position: absolute;
+            left: -1.5rem;
+            font-size: 1.2rem;
+        }
+    </style>
 </head>
 <body>
-  <!-- Navigation Bar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">PDE Solver Project</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="#overview">Overview</a></li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#methods" id="methodsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Methods</a>
-            <ul class="dropdown-menu" aria-labelledby="methodsDropdown">
-              <li><a class="dropdown-item" href="#finite-difference">Finite Difference</a></li>
-              <li><a class="dropdown-item" href="#finite-volume">Finite Volume</a></li>
-              <li><a class="dropdown-item" href="#machine-learning">Machine Learning</a></li>
+    <header>
+        <div class="header-content">
+            <h1>PDE Analysis of Pattern Formation in Biological Systems</h1>
+            <p class="subtitle">Chemoattractant and Stimulant Interactions in Biological Systems</p>
+
+            <p>Department of Systems and Biomedical Engineering, Faculty of Engineering, Cairo University, Giza, Egypt</p>
+        </div>
+    </header>
+
+    <nav>
+        <div class="nav-container">
+            <a href="#abstract"><i class="fas fa-file-alt"></i> Abstract</a>
+            <a href="#introduction"><i class="fas fa-book-open"></i> Introduction</a>
+            <a href="#literature-review"><i class="fas fa-book-reader"></i> Literature Review</a>
+            <a href="#model"><i class="fas fa-calculator"></i> Model</a>
+            <a href="#methods"><i class="fas fa-flask"></i> Methods</a>
+            <a href="#results"><i class="fas fa-chart-line"></i> Summary</a>
+            <a href="#future"><i class="fas fa-lightbulb"></i> Future Work</a>
+            <a href="#acknowledgment"><i class="fas fa-hands-helping"></i> Acknowledgment</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <section id="abstract">
+            <h2><i class="fas fa-file-alt"></i> Abstract</h2>
+            <div class="abstract">
+                <p>Pattern formation in biological systems through chemoattractant-cell interactions represents a fundamental mechanism underlying numerous developmental and physiological processes. This paper presents a comprehensive study of partial differential equation (PDE) models describing pattern formation dynamics, focusing on three-PDE system in one spatial dimension. We employ the Method of Lines (MOL) for numerical solutions and compare results with two other numerical approaches and machine learning approach. Our analysis demonstrates the effectiveness of both traditional numerical methods and modern ML techniques in capturing complex spatiotemporal patterns. The study reveals critical parameter regimes for pattern formation and provides insights into the underlying biological mechanisms. Simulation results show good agreement between numerical and ML solutions, with computational efficiency gains observed in the machine learning approach.</p>
+            </div>
+
+            <div class="keywords">
+                <span class="keyword">pattern formation</span>
+                <span class="keyword">partial differential equations</span>
+                <span class="keyword">chemoattractant</span>
+                <span class="keyword">Method of Lines</span>
+                <span class="keyword">machine learning</span>
+                <span class="keyword">py-pde</span>
+                <span class="keyword">numerical simulation</span>
+                <span class="keyword">finite difference method</span>
+                <span class="keyword">finite volume method</span>
+                <span class="keyword">spatiotemporal dynamics</span>
+                <span class="keyword">chemotaxis</span>
+                <span class="keyword">biological modeling</span>
+                <span class="keyword">PDE analysis</span>
+                <span class="keyword">computational biology</span>
+                <span class="keyword">neural operators</span>
+                <span class="keyword">reaction-diffusion systems</span>
+            </div>
+        </section>
+
+        <section id="introduction">
+            <h2><i class="fas fa-book-open"></i> Introduction</h2>
+            <p>Pattern formation in biological systems is a ubiquitous phenomenon that underlies many critical processes, from embryonic development to wound healing and tumor growth. The interaction between cells and chemical signals, particularly chemoattractants and stimulants, plays a crucial role in organizing cellular behavior and generating complex spatiotemporal patterns.</p>
+
+            <p>Mathematical modeling of these phenomena typically involves systems of partial differential equations that capture the dynamics of cell density, chemical concentrations, and their mutual interactions. The complexity of these models arises from nonlinear coupling terms, diffusion processes, and reaction kinetics that operate across multiple spatial and temporal scales.</p>
+
+            <p>This study focuses on PDE models describing how cells interact with chemoattractants and stimulants in one-dimensional space. We investigate three-PDE system, starting from basic diffusion equations and progressively incorporating nonlinear terms that capture essential biological mechanisms such as chemotaxis, cell proliferation, and chemical degradation.</p>
+
+            <h3>Research Objectives</h3>
+            <ul>
+                <li>Develop and analyze comprehensive PDE models for chemoattractant-cell interactions</li>
+                <li>Implement robust numerical solution methods using the Method of Lines</li>
+                <li>Explore machine learning approaches as alternative solution strategies</li>
+                <li>Identify parameter regimes that promote pattern formation</li>
+                <li>Provide insights into underlying biological mechanisms</li>
             </ul>
-          </li>
-          <li class="nav-item"><a class="nav-link" href="#results">Results</a></li>
-          <li class="nav-item"><a class="nav-link" href="#code">Code</a></li>
-          <li class="nav-item"><a class="nav-link" href="#contributors">Contributors</a></li>
-        </ul>
-      </div>
-    </div>
-  </nav>
+        </section>
 
-  <!-- Hero Section -->
-  <section id="overview" class="bg-light text-center">
-    <div class="container">
-      <h1 class="display-4">PDE Solver: 3 Approaches</h1>
-      <p class="lead">Comparing Finite Difference, Finite Volume, and Machine Learning techniques to solve reaction-diffusion PDEs.</p>
-      <a href="#methods" class="btn btn-primary btn-lg">Explore Methods</a>
-    </div>
-  </section>
+        <section id="literature-review">
+            <h2><i class="fas fa-book-reader"></i> Literature Review</h2>
 
-  <!-- Methods Sections -->
-  <section id="methods">
-    <div class="container">
-      <h2 class="mb-4">Methods Overview</h2>
-      <p>We implemented three different approaches to solve our PDE system:</p>
-      <div class="row gy-4">
-        <div class="col-md-4 text-center">
-          <h3>Finite Difference</h3>
-          <p>Classic central difference scheme for spatial derivatives and implicit time stepping.</p>
-          <a href="#finite-difference" class="btn btn-outline-primary">Details</a>
+            <div class="abstract">
+                <p>The mathematical modeling of biological pattern formation has evolved significantly since Turing's foundational work on reaction-diffusion systems. This review traces key developments from early chemotaxis models to contemporary machine learning approaches for PDE solutions.</p>
+            </div>
+
+            <div class="model-container">
+                <div class="model-card">
+                    <h3>Foundational Models</h3>
+                    <p>The mathematical framework for pattern formation began with Turing's reaction-diffusion theory (<a href="https://doi.org/10.1098/rstb.1952.0012" target="_blank">Turing, 1952</a>), which demonstrated how chemical interactions could spontaneously generate spatial patterns. This was extended by Keller and Segel's chemotaxis models (<a href="https://doi.org/10.1016/0022-5193(70)90092-5" target="_blank">Keller & Segel, 1970</a>) describing cell aggregation through self-produced chemoattractants.</p>
+
+                    <p>Murray's comprehensive PDE frameworks (<a href="https://link.springer.com/book/10.1007/b98869" target="_blank">Murray, 2003</a>) form the basis of the three-component system studied in this work (Chapter 2):</p>
+
+                    <div class="equation-display">
+                        \[
+                        \begin{aligned}
+                        \frac{\partial u_1}{\partial t} &= D_1 \nabla^2 u_1 - \nabla \cdot \left[ \frac{k_1 u_1}{(k_2 + u_2)^2} \nabla u_2 \right] + k_3 u_1 \left[ \frac{k_4 u_3^2}{k_9 + u_3^2} - u_1 \right] \\
+                        \frac{\partial u_2}{\partial t} &= D_2 \nabla^2 u_2 + k_5 u_3 \left[ \frac{u_1^2}{k_6 + u_1^2} \right] - k_7 u_1 u_2 \\
+                        \frac{\partial u_3}{\partial t} &= D_3 \nabla^2 u_3 - k_8 u_1 \left[ \frac{u_3^2}{k_9 + u_3^2} \right]
+                        \end{aligned}
+                        \]
+                    </div>
+                </div>
+
+                <div class="model-card">
+                    <h3>Computational Advances</h3>
+                    <p>The Method of Lines (MOL) emerged as a cornerstone technique for solving these complex PDE systems (<a href="https://www.sciencedirect.com/book/9780126241306/the-numerical-method-of-lines" target="_blank">Schiesser, 1991</a>). As implemented in Chapter 2, MOL discretizes spatial derivatives while maintaining temporal continuity:</p>
+
+                    <ul>
+                        <li>Finite difference approximations for derivatives</li>
+                        <li>Zero-flux Neumann boundary conditions</li>
+                        <li>Adaptive time-stepping with BDF methods</li>
+                        <li>Accuracy verification through h-refinement (mesh density) and p-refinement (approximation order)</li>
+                    </ul>
+
+                    <h3>Machine Learning Frontiers</h3>
+                    <p>Recent advances integrate deep learning with traditional PDE solvers:</p>
+
+                    <div class="keywords">
+                        <span class="keyword">Physics-Informed Neural Networks (PINNs)</span>
+                        <span class="keyword">Fourier Neural Operators (FNO)</span>
+                        <span class="keyword">DeepONet</span>
+                        <span class="keyword">Graph Convolutional Networks</span>
+                        <span class="keyword">Hybrid Solvers</span>
+                    </div>
+
+                    <p>These approaches offer mesh-free solutions and accelerated parameter exploration (<a href="https://arxiv.org/abs/1711.10561" target="_blank">Raissi et al., 2017</a>; <a href="https://arxiv.org/abs/2010.08895" target="_blank">Li et al., 2020</a>). Operator learning frameworks like FNO demonstrate particular promise for biological pattern prediction by learning mappings between function spaces.</p>
+                </div>
+            </div>
+
+            <h3>Current Research Directions</h3>
+            <div class="future-grid">
+                <div class="future-card">
+                    <h3><i class="fas fa-project-diagram"></i> Neural Operators</h3>
+                    <p>Fourier Neural Operators (FNOs) provide discretization-invariant solutions for PDE systems across parameter regimes (<a href="https://arxiv.org/abs/2010.08895" target="_blank">Li et al., 2020</a>).</p>
+                </div>
+
+                <div class="future-card">
+                    <h3><i class="fas fa-brain"></i> Physics-Informed Learning</h3>
+                    <p>PINNs embed PDE constraints directly into loss functions, enforcing physical consistency during training (<a href="https://www.sciencedirect.com/science/article/pii/S0021999118307125" target="_blank">Raissi et al., 2019</a>).</p>
+                </div>
+
+                <div class="future-card">
+                    <h3><i class="fas fa-network-wired"></i> Hybrid Architectures</h3>
+                    <p>Graph convolutional networks reinforce domain decomposition methods, improving scalability on complex geometries (<a href="https://arxiv.org/abs/2206.11871" target="_blank">Brandstetter et al., 2022</a>).</p>
+                </div>
+            </div>
+
+            <div class="acknowledgment">
+                <p><strong>Note:</strong> This work implements both traditional MOL approaches and modern ML techniques, demonstrating their complementary strengths in biological pattern simulation.</p>
+            </div>
+        </section>
+
+        <section id="model">
+            <h2><i class="fas fa-calculator"></i> Mathematical Model</h2>
+            <p>We developed a three-component system describing the interaction between cell density (u₁), chemoattractant concentration (u₂), and stimulant concentration (u₃) in one spatial dimension:</p>
+
+            <div class="equation-display">
+                <div class="equation-title">Cell Density Evolution (u₁)</div>
+                \[
+                \frac{\partial u_1}{\partial t} = D_1 \nabla^2 u_1 - \nabla \cdot (k_1 u_1 \nabla u_2) - \nabla \cdot (k_2 u_1 \nabla u_3) + k_3 u_1(1 - u_1/k_4)
+                \]
+            </div>
+
+            <div class="equation-display">
+                <div class="equation-title">Chemoattractant Evolution (u₂)</div>
+                \[
+                \frac{\partial u_2}{\partial t} = D_2 \nabla^2 u_2 + k_5 u_1 - k_6 u_2 u_3
+                \]
+            </div>
+
+            <div class="equation-display">
+                <div class="equation-title">Stimulant Evolution (u₃)</div>
+                \[
+                \frac{\partial u_3}{\partial t} = D_3 \nabla^2 u_3 + k_7 u_1 u_2 - k_8 u_3 - k_9 u_2 u_3
+                \]
+            </div>
+
+            <h3>∇ Operators in Cartesian Coordinates</h3>
+            <table class="math-table">
+                <thead>
+                <tr>
+                    <th>Operator</th>
+                    <th>Cartesian Representation</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>\( \nabla \)</td>
+                    <td><span>Gradient operator (div operating on a scalar)</span>\[ \mathbf{i}\frac{\partial}{\partial x} + \mathbf{j}\frac{\partial}{\partial y} + \mathbf{k}\frac{\partial}{\partial z} \]</td>
+                </tr>
+                <tr>
+                    <td>\( \nabla\cdot \)</td>
+                    <td>\[ \left( \mathbf{i}\frac{\partial}{\partial x} + \mathbf{j}\frac{\partial}{\partial y} + \mathbf{k}\frac{\partial}{\partial z} \right) \cdot \]</td>
+                </tr>
+                <tr>
+                    <td>\( \nabla\cdot\nabla = \nabla^2 \)</td>
+                    <td><span>Laplacian operator (div operating on a vector)</span>\[ \frac{\partial^2}{\partial x^2} + \frac{\partial^2}{\partial y^2} + \frac{\partial^2}{\partial z^2} \]</td>
+                </tr>
+                </tbody>
+            </table>
+            <p><strong>Note:</strong> \( \mathbf{i}, \mathbf{j}, \mathbf{k} \) are orthogonal Cartesian unit vectors with \( \mathbf{i} \cdot \mathbf{i} = 1 \) and \( \mathbf{i} \cdot \mathbf{j} = \mathbf{i} \cdot \mathbf{k} = 0 \).</p>
+
+            <div class="model-container">
+                <div class="model-card">
+                    <h3>Parameters and Notations</h3>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Interpretation</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>\( D_1, D_2, D_3 \)</td>
+                            <td>Diffusivities for u₁, u₂, u₃</td>
+                        </tr>
+                        <tr>
+                            <td>\( k_1, k_2 \)</td>
+                            <td>Chemotactic sensitivity coefficients</td>
+                        </tr>
+                        <tr>
+                            <td>\( k_3 \)</td>
+                            <td>Cell proliferation rate</td>
+                        </tr>
+                        <tr>
+                            <td>\( k_4 \)</td>
+                            <td>Carrying capacity</td>
+                        </tr>
+                        <tr>
+                            <td>\( k_5 \)</td>
+                            <td>Chemoattractant production rate</td>
+                        </tr>
+                        <tr>
+                            <td>\( k_6 \)</td>
+                            <td>Chemoattractant-stimulant interaction rate</td>
+                        </tr>
+                        <tr>
+                            <td>\( k_7 \)</td>
+                            <td>Stimulant production rate</td>
+                        </tr>
+                        <tr>
+                            <td>\( k_8 \)</td>
+                            <td>Stimulant decay rate</td>
+                        </tr>
+                        <tr>
+                            <td>\( k_9 \)</td>
+                            <td>Stimulant-chemoattractant interaction rate</td>
+                        </tr>
+                        <tr>
+                            <td>\( t \)</td>
+                            <td>Time</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="model-card">
+                    <div class="initial-conditions">
+                        <h3>Initial Conditions</h3>
+                        <ul>
+                            <li>Spatial domain: \( x \in [0, 1] \) cm</li>
+                            <li>Cell density: \( u_1(x,0) = 10^8 e^{-5x^2} \) cells/ml</li>
+                            <li>Chemoattractant: \( u_2(x,0) = 5 \times 10^{-6} e^{-5x^2} \) M</li>
+                            <li>Stimulant: \( u_3(x,0) = 10^{-3} e^{-5x^2} \) M</li>
+                        </ul>
+                    </div>
+
+                    <div class="boundary-conditions">
+                        <h3 style="margin-top: 1.5rem;">Boundary Conditions</h3>
+                        <p>Zero-flux Neumann conditions:</p>
+                        <div class="equation-display">
+                            \[
+                            \frac{\partial u_1}{\partial x}\bigg|_{x=0,L} = \frac{\partial u_2}{\partial x}\bigg|_{x=0,L} = \frac{\partial u_3}{\partial x}\bigg|_{x=0,L} = 0
+                            \]
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Methods Sections -->
+        <section id="methods">
+            <div class="container">
+                <h2 class="mb-4">Methods Overview</h2>
+                <p>We implemented three different approaches to solve our PDE system:</p>
+                <div class="row gy-4">
+                    <div class="col-md-4 text-center">
+                        <h3>Finite Difference</h3>
+                        <p>Classic central difference scheme for spatial derivatives and implicit time stepping.</p>
+                        <a href="#finite-difference" class="btn btn-outline-primary">Details</a>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <h3>Finite Volume</h3>
+                        <p>Conservative flux-based discretization ensuring local conservation.</p>
+                        <a href="#finite-volume" class="btn btn-outline-primary">Details</a>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <h3>Machine Learning</h3>
+                        <p>Data-driven approach using neural networks to approximate solution operators.</p>
+                        <a href="#machine-learning" class="btn btn-outline-primary">Details</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Finite Difference -->
+        <section id="finite-difference" class="bg-white">
+            <div class="container">
+                <h2>Finite Difference Method</h2>
+                <p><strong>Key Concepts:</strong> Central differences, Neumann boundary conditions, BDF time integrator.</p>
+                <h5>Implementation Snippet:</h5>
+                <pre><code class="language-python"># Second derivative with Neumann BCs
+                    def second_derivative(u, dx):
+                        d2u = np.zeros_like(u)
+                        d2u[1:-1] = (u[2:] - 2*u[1:-1] + u[:-2]) / dx**2
+                        d2u[0] = (2*u[1] - 2*u[0]) / dx**2
+                        d2u[-1] = (2*u[-2] - 2*u[-1]) / dx**2
+                        return d2u
+                </code></pre>
+                <p>See <a href="https://github.com/anas-204/pattern_formation_pde_model/tree/main/Solutions/Finite-Difference-Method">full code</a>.</p>
+                <div class="row text-center">
+                    <div class="col-md-4"><img src="https://raw.githubusercontent.com/anas-204/pattern_formation_pde_model/main/Solutions/Finite-Difference-Method/imgs/image.png" class="img-fluid" alt="Cell Density"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Finite Volume -->
+        <section id="finite-volume" class="bg-light">
+            <div class="container">
+                <h2>Finite Volume Method</h2>
+                <p><strong>Key Concepts:</strong> Control volumes, flux balance, upwinding.</p>
+                <h5>Implementation Snippet:</h5>
+                <pre><code class="language-python"># Compute fluxes at cell faces
+                    def compute_flux(u, dx):
+                        flux = np.zeros_like(u)
+                        # ... upwind or central flux
+                        return flux
+                </code></pre>
+                <p>See <a href="https://github.com/anas-204/pattern_formation_pde_model/tree/main/Solutions/Numerical%20Solutions/Finite_Volume">full code</a>.</p>
+                <div class="row">
+                    <div class="col-md-4"><img src="https://raw.githubusercontent.com/anas-204/pattern_formation_pde_model/main/Solutions/Numerical Solutions/Finite_Volume/image_solutions/Cell_Density_$u_1(x,t)$_comparison.png" class="img-fluid" alt="FV Solution"></div>
+                    <div class="col-md-4"><img src="https://raw.githubusercontent.com/anas-204/pattern_formation_pde_model/main/Solutions/Numerical Solutions/Finite_Volume/image_solutions/Chemoattractant_$u_2(x,t)$_comparison.png" class="img-fluid" alt="FV Error"></div>
+                    <div class="col-md-4"><img src="https://raw.githubusercontent.com/anas-204/pattern_formation_pde_model/main/Solutions/Numerical Solutions/Finite_Volume/image_solutions/Stimulant_$u_3(x,t)$_comparison.png" class="img-fluid" alt="FV Runtime"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Machine Learning -->
+        <section id="machine-learning">
+            <div class="container">
+                <h2>Machine Learning Approach</h2>
+
+                <div class="implementation-steps">
+                    <h3>Implementation Steps</h3>
+                    <p>Our ML-enhanced PDE solver implements the following workflow:</p>
+
+                    <div class="step-card">
+                        <div class="step-header">
+                            <span class="step-number">1</span>
+                            <h4>PDE Model Conversion</h4>
+                        </div>
+                        <ul class="step-details">
+                            <li>Implemented biological equations through PatternFormationPDE class</li>
+                            <li>Defined parameters: diffusivities (D₁, D₂, D₃) and rate constants (k₁-k₉)</li>
+                        </ul>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-header">
+                            <span class="step-number">2</span>
+                            <h4>Spatial Discretization</h4>
+                        </div>
+                        <ul class="step-details">
+                            <li>Created 1D grid with 51 support points (\(x \in [0,1]\) cm)</li>
+                            <li>Applied Neumann boundary conditions (zero-flux)</li>
+                            <li>Initialized with Gaussian state: \(u_1(x,0) = 10^8e^{-5x^2} \) cells/mL</li>
+                        </ul>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-header">
+                            <span class="step-number">3</span>
+                            <h4>Adaptive Time-Stepping</h4>
+                        </div>
+                        <ul class="step-details">
+                            <li>Used Scipy's BDF solver for stiff systems</li>
+                            <li>Stored solution states at 0.5hr intervals</li>
+                            <li>Calculated diffusion, chemotaxis, and stimulation terms</li>
+                        </ul>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-header">
+                            <span class="step-number">4</span>
+                            <h4>Solution Analysis</h4>
+                        </div>
+                        <ul class="step-details">
+                            <li>Extracted and visualized spatiotemporal patterns</li>
+                            <li>Printed final state at t = 5 hours</li>
+                            <li>Compared accuracy against reference solutions</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Results at t = 5 hours</h3>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead class="table-dark">
+                        <tr>
+                            <th>x (cm)</th>
+                            <th>u₁ (cells/mL)</th>
+                            <th>u₂ (M)</th>
+                            <th>u₃ (M)</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr><td>0.0</td><td>1.0296 × 10⁷</td><td>2.4961 × 10⁻⁶</td><td>3.4552 × 10⁻⁴</td></tr>
+                        <tr><td>0.2</td><td>9.7859 × 10⁶</td><td>2.3936 × 10⁻⁶</td><td>3.3582 × 10⁻⁴</td></tr>
+                        <tr><td>0.4</td><td>8.3396 × 10⁶</td><td>2.1425 × 10⁻⁶</td><td>3.1154 × 10⁻⁴</td></tr>
+                        <tr><td>0.6</td><td>6.6273 × 10⁶</td><td>1.8362 × 10⁻⁶</td><td>2.8066 × 10⁻⁴</td></tr>
+                        <tr><td>1.0</td><td>4.9208 × 10⁶</td><td>1.4863 × 10⁻⁶</td><td>2.4373 × 10⁻⁴</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Evolutions of u1, u2, and u3</h3>
+                <div class="row text-center mt-4">
+                    <div class="col-md-12">
+                        <img src="https://raw.githubusercontent.com/anas-204/pattern_formation_pde_model/main/Solutions/Machine%20Learning%20Solution/deliverables/evolution_of_u1_u2_u3.png"
+                             class="img-fluid rounded shadow" alt="ML Solution Evolution" style="max-height: 500px;">
+                        <p class="mt-2 fst-italic">Figure: Spatiotemporal evolution of pattern formation</p>
+                    </div>
+                </div>
+
+                <div class="model-container">
+                    <div class="model-card">
+                        <h4>Accuracy Comparison with Book Results</h4>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead class="table-success">
+                                <tr>
+                                    <th>Variable</th>
+                                    <th>MAX Error (%)</th>
+                                    <th>MIN Error (%)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr><td>U₁ (cells)</td><td>1.98</td><td>0.04</td></tr>
+                                <tr><td>U₂ (chemoattractant)</td><td>0.72</td><td>0.36</td></tr>
+                                <tr><td>U₃ (stimulant)</td><td>0.18</td><td>0.01</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="model-card">
+                        <h4>Computational Performance</h4>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead class="table-success">
+                                <tr>
+                                    <th>Metric</th>
+                                    <th>Value</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr><td>Total Runtime</td><td>6.446 seconds</td></tr>
+                                <tr><td>Number of ODEs Solved</td><td>153 equations</td></tr>
+                                <tr><td>Time per Equation</td><td>0.0452 seconds</td></tr>
+                                <tr><td>Function Evaluations</td><td>z</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-info mt-4">
+                    <strong>Key Insight:</strong> The ML approach achieves high accuracy (≤1.98% error) while efficiently solving
+                    153 coupled ODEs derived from PDE discretization, with solution snapshots stored every 30 minutes.
+                </div>
+            </div>
+        </section>
+
+        <section id="results">
+            <h2><i class="fas fa-chart-line"></i> Summary Disscusion</h2>
+
+            <h3>Solution Accuracy Comparison</h3>
+            <p>This section compares the accuracy of our three solution approaches against reference results from literature. Each table shows the maximum and minimum percentage errors for the three system variables (U1: Cell Density, U2: Chemoattractant, U3: Stimulant) relative to established benchmark solutions.</p>
+
+            <div class="results-grid">
+                <div class="result-card">
+                    <h4>Learning-Based Method</h4>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Variable</th>
+                            <th>MAX Error (%)</th>
+                            <th>MIN Error (%)</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>U1</td>
+                            <td>1.98</td>
+                            <td>0.04</td>
+                        </tr>
+                        <tr>
+                            <td>U2</td>
+                            <td>0.72</td>
+                            <td>0.36</td>
+                        </tr>
+                        <tr>
+                            <td>U3</td>
+                            <td>0.18</td>
+                            <td>0.01</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="result-card">
+                    <h4>Finite Volume Method</h4>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Variable</th>
+                            <th>MAX Error (%)</th>
+                            <th>MIN Error (%)</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>U1</td>
+                            <td>x00</td>
+                            <td>x01</td>
+                        </tr>
+                        <tr>
+                            <td>U2</td>
+                            <td>x10</td>
+                            <td>x11</td>
+                        </tr>
+                        <tr>
+                            <td>U3</td>
+                            <td>x20</td>
+                            <td>x21</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="result-card">
+                    <h4>Finite Difference Method</h4>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Variable</th>
+                            <th>MAX Error (%)</th>
+                            <th>MIN Error (%)</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>U1</td>
+                            <td>y00</td>
+                            <td>y01</td>
+                        </tr>
+                        <tr>
+                            <td>U2</td>
+                            <td>y10</td>
+                            <td>y11</td>
+                        </tr>
+                        <tr>
+                            <td>U3</td>
+                            <td>y20</td>
+                            <td>y21</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h3>Computational Performance</h3>
+            <p>The table below compares the computational efficiency of the different solution approaches. Runtime is measured in seconds for the full simulation, with problem size quantified by the number of ordinary differential equations (ODEs) solved.</p>
+
+            <div class="result-card">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>MOL</th>
+                        <th>LEARNING-BASED</th>
+                        <th>FVM</th>
+                        <th>FDM</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Runtime (sec)</td>
+                        <td>1.826</td>
+                        <td>6.446</td>
+                        <td>x0</td>
+                        <td>y0</td>
+                    </tr>
+                    <tr>
+                        <td>Problem Size (no. of ODEs)</td>
+                        <td>153</td>
+                        <td>153</td>
+                        <td>153</td>
+                        <td>153</td>
+                    </tr>
+                    <tr>
+                        <td>Time per Equation (s/equ)</td>
+                        <td>0.0119</td>
+                        <td>0.0452</td>
+                        <td>x2</td>
+                        <td>y2</td>
+                    </tr>
+                    <tr>
+                        <td>Function Evaluations</td>
+                        <td>1052</td>
+                        <td>z</td>
+                        <td>x3</td>
+                        <td>y3</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="future">
+            <h2><i class="fas fa-lightbulb"></i> Future Work and Improvements</h2>
+
+            <h3>Algorithmic Enhancements</h3>
+            <div class="future-grid">
+                <div class="future-card">
+                    <h3><i class="fas fa-expand"></i> Adaptive Mesh Refinement</h3>
+                    <p>Implement h-refinement to dynamically increase spatial resolution in regions of steep gradients</p>
+                </div>
+
+                <div class="future-card">
+                    <h3><i class="fas fa-sort-numeric-up"></i> High-Order Integration</h3>
+                    <p>Upgrade to 6th-order finite difference schemes to reduce discretization errors</p>
+                </div>
+            </div>
+
+            <h3>Model Extensions</h3>
+            <div class="future-grid">
+                <div class="future-card">
+                    <h3><i class="fas fa-cube"></i> 2D/3D Simulations</h3>
+                    <p>Extend to higher dimensions to model realistic biological pattern formation</p>
+                </div>
+
+                <div class="future-card">
+                    <h3><i class="fas fa-dice"></i> Stochastic Terms</h3>
+                    <p>Introduce noise to model microenvironment variability and heterogeneity</p>
+                </div>
+
+                <div class="future-card">
+                    <h3><i class="fas fa-brain"></i> Neural ODEs</h3>
+                    <p>Implement data-driven parameter calibration using neural ODE frameworks</p>
+                </div>
+            </div>
+
+            <h3>Deep Learning Integration</h3>
+            <div class="future-grid">
+                <div class="future-card">
+                    <h3><i class="fas fa-microscope"></i> Hybrid Solver</h3>
+                    <p>Incorporate microscopy data via CNN encoders to generate biologically realistic initial conditions</p>
+                </div>
+
+                <div class="future-card">
+                    <h3><i class="fas fa-project-diagram"></i> Operator Learning</h3>
+                    <p>Train Fourier Neural Operators to predict patterns without solving full PDEs</p>
+                </div>
+
+                <div class="future-card">
+                    <h3><i class="fas fa-chart-bar"></i> Uncertainty Quantification</h3>
+                    <p>Implement Bayesian PINNs to estimate solution confidence intervals</p>
+                </div>
+            </div>
+
+            <h3>Biological Applications</h3>
+            <div class="future-grid">
+                <div class="future-card">
+                    <h3><i class="fas fa-bacterium"></i> Cancer Research</h3>
+                    <p>Model tumor invasion patterns and metastasis formation</p>
+                </div>
+
+                <div class="future-card">
+                    <h3><i class="fas fa-pills"></i> Drug Delivery</h3>
+                    <p>Simulate smart drug navigation through biological systems for targeted therapies</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="acknowledgment">
+            <h2><i class="fas fa-hands-helping"></i> Acknowledgment</h2>
+            <div class="acknowledgment">
+                <p>The authors would like to express their sincere gratitude to their course supervisor, Professor Muhammad Rushdi, for his invaluable guidance, encouragement, and support throughout this project, which was conducted as part of the Numerical Methods course at Cairo University.</p>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <h3>Contributors</h3>
+            <p>Thanks to everyone who contributed:</p>
+
+            <div class="authors">
+                <a href="https://www.linkedin.com/in/anas-mohamed-elsheikh/" target="_blank"><div class="author">
+                    <span class="author-name">Anas Mohamed Abdelaziz Elsheikh</span>
+                    <span class="author-email">anas.elshaikh@student.cu.edu.eg</span>
+                </div></a>
+                <a href="https://www.linkedin.com/in/ahmed-shehab-engineering/" target="_blank"><div class="author">
+                    <span class="author-name">Ahmed Abdelghaffar Mostafa Shehab</span>
+                    <span class="author-email">ahmed.shehab@student.cu.edu.eg</span>
+                </div></a>
+                <a href="https://www.linkedin.com/in/sherifelgendy04/" target="_blank"><div class="author">
+                    <span class="author-name">Sherif Mohamed Mahmoud Elgendy</span>
+                    <span class="author-email">sherif.elgendy@student.cu.edu.eg</span>
+                </div></a>
+                <a href="https://www.linkedin.com/in/mostafa-ashraf-935214276/" target="_blank"><div class="author">
+                    <span class="author-name">Mostafa Ashraf Mostafa Abdelrahim</span>
+                    <span class="author-email">mostafa.abdelrahim@student.cu.edu.eg</span>
+                </div></a>
+                <a href="https://www.linkedin.com/in/seif-samaan-63b39b281/" target="_blank"><div class="author">
+                    <span class="author-name">Seif Samaan Ghaly Atia</span>
+                    <span class="author-email">seif.atia@student.cu.edu.eg</span>
+                </div></a>
+                <a href="https://www.linkedin.com/in/ziad-ramdan-006644250/" target="_blank"><div class="author">
+                    <span class="author-name">Ziad Ramadan Mohamed Mohamed</span>
+                    <span class="author-email">ziad.ramadan@student.cu.edu.eg</span>
+
+                </div></a>
+                <a href="https://www.linkedin.com/in/mohamed-hagras-85a932261/" target="_blank"><div class="author">
+                    <span class="author-name">Mohamed Ashraf Abdelhamid Hagras</span>
+                    <span class="author-email">mohamed.hagras@student.cu.edu.eg</span>
+                </div></a>
+                <a href="https://www.linkedin.com/in/mazen-atlam/" target="_blank"><div class="author">
+                    <span class="author-name">Mazen Atef Awad Atlam</span>
+                    <span class="author-email">mazen.atlam04@eng-st.cu.edu.eg</span>
+                </div></a>
+            </div>
+
+            <div class="social-links">
+                <a href="https://github.com/anas-204/pattern_formation_pde_model" target="_blank"><i class="fab fa-github"></i></a>
+            </div>
+
+            <p>&copy; 2025 ZGamma Research Group. All rights reserved.</p>
         </div>
-        <div class="col-md-4 text-center">
-          <h3>Finite Volume</h3>
-          <p>Conservative flux-based discretization ensuring local conservation.</p>
-          <a href="#finite-volume" class="btn btn-outline-primary">Details</a>
-        </div>
-        <div class="col-md-4 text-center">
-          <h3>Machine Learning</h3>
-          <p>Data-driven approach using neural networks to approximate solution operators.</p>
-          <a href="#machine-learning" class="btn btn-outline-primary">Details</a>
-        </div>
-      </div>
-    </div>
-  </section>
+    </footer>
 
-  <!-- Finite Difference -->
-  <section id="finite-difference" class="bg-white">
-    <div class="container">
-      <h2>Finite Difference Method</h2>
-      <p><strong>Key Concepts:</strong> Central differences, Neumann boundary conditions, BDF time integrator.</p>
-      <h5>Implementation Snippet:</h5>
-      <pre><code class="language-python"># Second derivative with Neumann BCs
-def second_derivative(u, dx):
-    d2u = np.zeros_like(u)
-    d2u[1:-1] = (u[2:] - 2*u[1:-1] + u[:-2]) / dx**2
-    d2u[0] = (2*u[1] - 2*u[0]) / dx**2
-    d2u[-1] = (2*u[-2] - 2*u[-1]) / dx**2
-    return d2u</code></pre>
-      <p>See <a href="https://github.com/anas-204/pattern_formation_pde_model/tree/main/Solutions/Finite-Difference-Method">full code</a>.</p>
-      <div class="row text-center>
-        <div class="col-md-4"><img src="https://raw.githubusercontent.com/anas-204/pattern_formation_pde_model/main/Solutions/Finite-Difference-Method/imgs/image.png" class="img-fluid" alt="Cell Density"></div>
-      </div>
-    </div>
-  </section>
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
 
-  <!-- Finite Volume -->
-  <section id="finite-volume" class="bg-light">
-    <div class="container">
-      <h2>Finite Volume Method</h2>
-      <p><strong>Key Concepts:</strong> Control volumes, flux balance, upwinding.</p>
-      <h5>Implementation Snippet:</h5>
-      <pre><code class="language-python"># Compute fluxes at cell faces
-def compute_flux(u, dx):
-    flux = np.zeros_like(u)
-    # ... upwind or central flux
-    return flux</code></pre>
-      <p>See <a href="https://github.com/anas-204/pattern_formation_pde_model/tree/main/Solutions/Numerical%20Solutions/Finite_Volume">full code</a>.</p>
-      <div class="row">
-        <div class="col-md-4"><img src="https://raw.githubusercontent.com/anas-204/pattern_formation_pde_model/main/Solutions/Numerical Solutions/Finite_Volume/image_solutions/Cell_Density_$u_1(x,t)$_comparison.png" class="img-fluid" alt="FV Solution"></div>
-        <div class="col-md-4"><img src="https://raw.githubusercontent.com/anas-204/pattern_formation_pde_model/main/Solutions/Numerical Solutions/Finite_Volume/image_solutions/Chemoattractant_$u_2(x,t)$_comparison.png" class="img-fluid" alt="FV Error"></div>
-        <div class="col-md-4"><img src="https://raw.githubusercontent.com/anas-204/pattern_formation_pde_model/main/Solutions/Numerical Solutions/Finite_Volume/image_solutions/Stimulant_$u_3(x,t)$_comparison.png" class="img-fluid" alt="FV Runtime"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Machine Learning -->
-  <section id="machine-learning">
-    <div class="container">
-      <h2>Machine Learning Approach</h2>
-      <p><strong>Key Concepts:</strong> PINNs, operator learning, training dataset.</p>
-<h5>Architecture Overview:</h5>
-      <ul>
-        <li>Inputs: Spatial coordinate, time.</li>
-        <li>Network: 4-layer MLP with 64 neurons/layer, tanh activation.</li>
-        <li>Loss: PDE residual + boundary & initial condition enforcement.</li>
-      </ul>
-      <h5>Training Snippet:</h5>
-      <pre><code class="language-python"># Define PINN
-model = PINN(layers=[2,64,64,64,1])
-# Loss: residual + BC + IC
-# Training loop
-</code></pre>
-      <p>See <a href="https://github.com/anas-204/pattern_formation_pde_model/tree/main/Solutions/Machine%20Learning%20Solution">full code</a>.</p>
-    </div>
-      <div class="row text-center
-        <div class="col-md-4"><img src="https://raw.githubusercontent.com/anas-204/pattern_formation_pde_model/main/Solutions/Machine Learning Solution/deliverables/evolution_of_u1_u2_u3.png" class="img-fluid" alt="ML Prediction"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Results -->
-  <section id="results" class="bg-white">
-    <div class="container">
-      <h2>Results & Comparisons</h2>
-      <p>Below are sample solution profiles and performance metrics.</p>
-      <div class="row gy-4">
-        <div class="col-md-6">
-          <h5>Solution Profiles</h5>
-          <img src="figures/u1_solution.png" alt="Cell Density Profiles" class="img-fluid">
-        </div>
-        <div class="col-md-6">
-          <h5>Runtime Comparison</h5>
-          <table class="table table-striped">
-            <thead>
-              <tr><th>Method</th><th>Runtime (s)</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>Finite Difference</td><td>12.3</td></tr>
-              <tr><td>Finite Volume</td><td>15.8</td></tr>
-              <tr><td>Machine Learning</td><td>120.5</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Code -->
-  <section id="code" class="bg-light">
-    <div class="container">
-      <h2>Code Repository</h2>
-      <p>All source code is available on GitHub:</p>
-      <a href="https://github.com/anas-204/pattern_formation_pde_model" class="btn btn-dark">View on GitHub</a>
-    </div>
-  </section>
-
-  <!-- Contributors -->
-  <section id="contributors" class="bg-white">
-    <div class="container text-center">
-      <h2>Contributors</h2>
-      <p>Thanks to everyone who contributed:</p>
-      <ul class="list-inline">
-        <li class="list-inline-item">Mazen Atef Awad Mohamed Atlam</li>
-        <li class="list-inline-item">Anas Mohamed Abdelaziz Elsheikh</li>
-        <li class="list-inline-item">Ahmed Abdelghaffar Mostafa Shehab</li>
-        <li class="list-inline-item">Mohamed Ashraf Abdelhamid Hagras</li>
-        <li class="list-inline-item">Sherif Mohamed Mahmoud Elgendy</li>
-        <li class="list-inline-item">Ziad Ramadan Mohamed Mohamed</li>
-        <li class="list-inline-item">Mostafa Ashraf Mostafa Abdelrahim</li>
-        <li class="list-inline-item">Seif Samaan Ghaly Atia</li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="bg-dark text-white text-center py-4">
-    <div class="container">
-      <p class="mb-0">&copy; 2025 PDE Solver Project. All rights reserved.</p>
-    </div>
-  </footer>
-
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80,
+                    behavior: 'smooth'
+                })
+            })
+        })
+    </script>
 </body>
 </html>

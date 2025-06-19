@@ -832,20 +832,113 @@
             </section>
 
             <!-- Finite Difference -->
-            <section id="finite-difference" class="bg-white">
-                <div class="container">
-                    <h2>Finite Difference Method</h2>
-                    <p><strong>Key Concepts:</strong> Central differences, Neumann boundary conditions, BDF time
-                        integrator.</p>
-                    <h5>Implementation Snippet:</h5>
-                    <pre><code class="language-python"># Second derivative with Neumann BCs
-                    def second_derivative(u, dx):
-                        d2u = np.zeros_like(u)
-                        d2u[1:-1] = (u[2:] - 2*u[1:-1] + u[:-2]) / dx**2
-                        d2u[0] = (2*u[1] - 2*u[0]) / dx**2
-                        d2u[-1] = (2*u[-2] - 2*u[-1]) / dx**2
-                        return d2u
+            <section id="finite-difference" class="bg-light">
+    <div class="container">
+        <h2><i class="fas fa-border-none"></i> Finite Difference Method</h2>
+
+        <div class="implementation-steps">
+            <h3>Implementation Methodology</h3>
+            <p>
+                The Finite Difference Method approximates derivatives by differences over a grid of evenly spaced nodes.
+                The PDEs are transformed into a coupled system of ODEs via second-order central differences for diffusion and advection, solved with implicit time stepping.
+            </p>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <span class="step-number">1</span>
+                    <h4>Grid Construction and Variable Representation</h4>
+                </div>
+                <ul class="step-details">
+                    <li>Divide the domain \(x \in [0, L]\) into \(M\) equally spaced points \(x_i\) with spacing \(\Delta x\).</li>
+                    <li>Field variables \(u_k(x, t)\) are sampled at node points: \(u^n_{k,i} \approx u_k(x_i, t_n)\).</li>
+                    <li>Derivatives are approximated using centered difference stencils around interior nodes.</li>
+                </ul>
+            </div>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <span class="step-number">2</span>
+                    <h4>Discrete Derivative Operators</h4>
+                </div>
+                <ul class="step-details">
+                    <li>Second derivative (diffusion term) at interior:
+                        \[
+                        \frac{\partial^2 u}{\partial x^2} \approx \frac{u_{i+1} - 2u_i + u_{i-1}}{\Delta x^2}
+                        \]
+                    </li>
+                    <li>Neumann BC at boundaries (zero-flux):
+                        \[
+                        u_0' = \frac{u_1 - u_0}{\Delta x}, \quad u_M' = \frac{u_M - u_{M-1}}{\Delta x}
+                        \]
+                    </li>
+                    <li>Advection (chemotaxis) term:
+                        \[
+                        -\chi \partial_x(u \partial_x v) \approx -\chi \cdot \frac{(u_{i+1} \delta v_{i+1}) - (u_{i} \delta v_i)}{\Delta x}
+                        \]</li>
+                </ul>
+            </div>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <span class="step-number">3</span>
+                    <h4>Semi-Discrete ODE System</h4>
+                </div>
+                <ul class="step-details">
+                    <li>The discretized equations at each node form a coupled ODE system:
+                        \[
+                        \frac{du_{k,i}}{dt} = D_k \cdot \frac{u_{k,i+1} - 2u_{k,i} + u_{k,i-1}}{\Delta x^2} + \text{reaction}_{k,i} + \text{advection}_{k,i}
+                        \]
+                    </li>
+                    <li>Reactions are evaluated pointwise: \( f_{k,i} = f(u_i, v_i, w_i) \).</li>
+                </ul>
+            </div>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <span class="step-number">4</span>
+                    <h4>Boundary Condition Treatment</h4>
+                </div>
+                <ul class="step-details">
+                    <li>Enforce zero-flux (Neumann) by symmetric ghost values:
+                        \[
+                        u_0 = u_1, \quad u_M = u_{M-1}
+                        \]
+                    </li>
+                    <li>Applied in constructing finite difference stencils for boundary nodes.</li>
+                </ul>
+            </div>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <span class="step-number">5</span>
+                    <h4>Time Integration Strategy</h4>
+                </div>
+                <ul class="step-details">
+                    <li>Temporal integration is performed using the implicit BDF (backward differentiation formula) method.</li>
+                    <li>Nonlinear terms solved with Newton iteration at each timestep.</li>
+                    <li>Recommended stability criterion:
+                        \[
+                        \Delta t \leq \frac{\Delta x^2}{2 D_{\text{max}}}
+                        \]
+                    </li>
+                </ul>
+            </div>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <span class="step-number">6</span>
+                    <h4>Python Implementation Snippet</h4>
+                </div>
+                <pre><code class="language-python"># Second derivative with Neumann BCs
+def second_derivative(u, dx):
+    d2u = np.zeros_like(u)
+    d2u[1:-1] = (u[2:] - 2*u[1:-1] + u[:-2]) / dx**2
+    d2u[0] = (2*u[1] - 2*u[0]) / dx**2
+    d2u[-1] = (2*u[-2] - 2*u[-1]) / dx**2
+    return d2u
                 </code></pre>
+            </div>
+        </div>
                     <p>See <a
                             href="https://github.com/anas-204/pattern_formation_pde_model/tree/main/Solutions/Finite-Difference-Method">full
                             code</a>.</p>

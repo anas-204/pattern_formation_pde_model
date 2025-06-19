@@ -859,167 +859,164 @@
 
             <!-- Finite Volume -->
             <section id="finite-volume" class="bg-light">
-                <!-- Finite Volume -->
-                <section id="finite-volume" class="bg-light">
-                    <div class="container">
-                        <h2><i class="fas fa-cubes"></i> Finite Volume Method</h2>
+                <div class="container">
+                    <h2><i class="fas fa-cubes"></i> Finite Volume Method</h2>
 
-                        <div class="implementation-steps">
-                            <h3>Implementation Methodology</h3>
-                            <p>The Finite Volume Method solves PDEs by discretizing the domain into control volumes and
-                                enforcing conservation laws over each volume. This transforms the PDE system into flux
-                                balance equations that preserve physical quantities.</p>
+                    <div class="implementation-steps">
+                        <h3>Implementation Methodology</h3>
+                        <p>The Finite Volume Method solves PDEs by discretizing the domain into control volumes and
+                            enforcing conservation laws over each volume. This transforms the PDE system into flux
+                            balance equations that preserve physical quantities.</p>
 
-                            <div class="step-card">
-                                <div class="step-header">
-                                    <span class="step-number">1</span>
-                                    <h4>Domain Discretization and Grid Definition</h4>
-                                </div>
-                                <ul class="step-details">
-                                    <li>Partition the spatial domain \(x\in[0,L]\) into \(N\) control volumes (cells)
-                                    </li>
-                                    <li>Cell centers at \(x_j\) with width \(\Delta x\), faces at \(x_{j\pm1/2}\)</li>
-                                    <li>Solution represented as cell averages:
-                                        \[ \bar{u}^n_{k,j} \approx \frac{1}{\Delta x}\int_{x_{j-1/2}}^{x_{j+1/2}}
-                                        u_k(x,t_n)dx \]
-                                    </li>
-                                </ul>
+                        <div class="step-card">
+                            <div class="step-header">
+                                <span class="step-number">1</span>
+                                <h4>Domain Discretization and Grid Definition</h4>
                             </div>
-
-                            <div class="step-card">
-                                <div class="step-header">
-                                    <span class="step-number">2</span>
-                                    <h4>Integral Formulation and Flux Approximation</h4>
-                                </div>
-                                <ul class="step-details">
-                                    <li>Integrate PDE over each control volume and apply divergence theorem:
-                                        \[ \frac{d\bar{u}_{k,j}}{dt} = \frac{1}{\Delta x}\left[F_{k,j+1/2} -
-                                        F_{k,j-1/2}\right] + \bar{f}_{k,j} \]
-                                    </li>
-                                    <li>Diffusive flux (central difference):
-                                        \[ F^{\text{diff}}_{k,j+1/2} = D_k\frac{u_{k,j+1} - u_{k,j}}{\Delta x} \]
-                                    </li>
-                                    <li>Advective flux (upwind scheme):
-                                        \[ F^{\text{adv}}_{k,j+1/2} = \chi u_{k,j}\frac{c_{j+1} - c_j}{\Delta x} \]
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <div class="step-card">
-                                <div class="step-header">
-                                    <span class="step-number">3</span>
-                                    <h4>Semi-Discrete FVM System</h4>
-                                </div>
-                                <ul class="step-details">
-                                    <li>Resulting ODE system for each cell:
-                                        \[
-                                        \begin{aligned}
-                                        \frac{d\bar{u}_{k,j}}{dt} = &\frac{D_k}{\Delta x^2}(\bar{u}_{k,j+1} -
-                                        2\bar{u}_{k,j} + \bar{u}_{k,j-1}) \\
-                                        &- \frac{\chi}{\Delta x^2}\big[u_{k,j}(c_{j+1}-c_j) -
-                                        u_{k,j-1}(c_j-c_{j-1})\big] + \bar{f}_{k,j}
-                                        \end{aligned}
-                                        \]
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <div class="step-card">
-                                <div class="step-header">
-                                    <span class="step-number">4</span>
-                                    <h4>Boundary Condition Implementation</h4>
-                                </div>
-                                <ul class="step-details">
-                                    <li>Ghost cell values for no-flux boundaries:
-                                        \[ u_{k,0} = u_{k,1}, \quad u_{k,N+1} = u_{k,N} \]
-                                    </li>
-                                    <li>Boundary fluxes:
-                                        \[ F_{k,1/2} = 0, \quad F_{k,N+1/2} = 0 \]
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <div class="step-card">
-                                <div class="step-header">
-                                    <span class="step-number">5</span>
-                                    <h4>Temporal Discretization</h4>
-                                </div>
-                                <ul class="step-details">
-                                    <li>Time integration: Adaptive BDF2 method</li>
-                                    <li>Nonlinear handling: Newton iterations for implicit steps</li>
-                                    <li>Stability condition: \(\Delta t \leq \frac{\Delta x^2}{2D_{\text{max}}}\)</li>
-                                </ul>
-                            </div>
+                            <ul class="step-details">
+                                <li>Partition the spatial domain \(x\in[0,L]\) into \(N\) control volumes (cells)
+                                </li>
+                                <li>Cell centers at \(x_j\) with width \(\Delta x\), faces at \(x_{j\pm1/2}\)</li>
+                                <li>Solution represented as cell averages:
+                                    \[ \bar{u}^n_{k,j} \approx \frac{1}{\Delta x}\int_{x_{j-1/2}}^{x_{j+1/2}}
+                                    u_k(x,t_n)dx \]
+                                </li>
+                            </ul>
                         </div>
 
-                        <h3>Results and Comparison</h3>
-                        <div class="results-grid">
-                            <div class="result-card">
-                                <h4>Relative Errors at Selected Points</h4>
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>\(x\) (cm)</th>
-                                            <th>\(u_1\) error (%)</th>
-                                            <th>\(u_2\) error (%)</th>
-                                            <th>\(u_3\) error (%)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>0.0</td>
-                                            <td>0.07</td>
-                                            <td>2.99</td>
-                                            <td>0.02</td>
-                                        </tr>
-                                        <tr>
-                                            <td>0.4</td>
-                                            <td>0.25</td>
-                                            <td>2.77</td>
-                                            <td>0.12</td>
-                                        </tr>
-                                        <tr>
-                                            <td>0.8</td>
-                                            <td>0.59</td>
-                                            <td>1.61</td>
-                                            <td>0.17</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                        <div class="step-card">
+                            <div class="step-header">
+                                <span class="step-number">2</span>
+                                <h4>Integral Formulation and Flux Approximation</h4>
                             </div>
-
-                            <div class="result-card">
-                                <h4>Key Findings</h4>
-                                <ul>
-                                    <li>FVM demonstrates excellent conservation properties</li>
-                                    <li>Better captures sharp gradients and maintains physical bounds</li>
-                                    <li>Shows good agreement with MOL in smooth solution regions</li>
-                                    <li>Recommended for long-term simulations with conservation constraints</li>
-                                </ul>
-                            </div>
+                            <ul class="step-details">
+                                <li>Integrate PDE over each control volume and apply divergence theorem:
+                                    \[ \frac{d\bar{u}_{k,j}}{dt} = \frac{1}{\Delta x}\left[F_{k,j+1/2} -
+                                    F_{k,j-1/2}\right] + \bar{f}_{k,j} \]
+                                </li>
+                                <li>Diffusive flux (central difference):
+                                    \[ F^{\text{diff}}_{k,j+1/2} = D_k\frac{u_{k,j+1} - u_{k,j}}{\Delta x} \]
+                                </li>
+                                <li>Advective flux (upwind scheme):
+                                    \[ F^{\text{adv}}_{k,j+1/2} = \chi u_{k,j}\frac{c_{j+1} - c_j}{\Delta x} \]
+                                </li>
+                            </ul>
                         </div>
 
-                        <div class="figure-container"
-                            style="display: flex; justify-content: space-around; flex-wrap: wrap; margin: 20px 0;">
-                            <div class="figure" style="text-align: center; margin: 10px; flex: 1; min-width: 300px;">
-                                <img src="U1_sol.png" alt="FVM Solution"
-                                    style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 4px;">
-                                <p class="figure-caption" style="font-size: 0.9em; color: #666; margin-top: 8px;">Figure
-                                    1a: FVM Solution</p>
+                        <div class="step-card">
+                            <div class="step-header">
+                                <span class="step-number">3</span>
+                                <h4>Semi-Discrete FVM System</h4>
                             </div>
-                            <div class="figure" style="text-align: center; margin: 10px; flex: 1; min-width: 300px;">
-                                <img src="MOL_sol.jpg" alt="MOL Solution"
-                                    style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 4px;">
-                                <p class="figure-caption" style="font-size: 0.9em; color: #666; margin-top: 8px;">Figure
-                                    1b: MOL Solution</p>
-                            </div>
+                            <ul class="step-details">
+                                <li>Resulting ODE system for each cell:
+                                    \[
+                                    \begin{aligned}
+                                    \frac{d\bar{u}_{k,j}}{dt} = &\frac{D_k}{\Delta x^2}(\bar{u}_{k,j+1} -
+                                    2\bar{u}_{k,j} + \bar{u}_{k,j-1}) \\
+                                    &- \frac{\chi}{\Delta x^2}\big[u_{k,j}(c_{j+1}-c_j) -
+                                    u_{k,j-1}(c_j-c_{j-1})\big] + \bar{f}_{k,j}
+                                    \end{aligned}
+                                    \]
+                                </li>
+                            </ul>
                         </div>
-                        <p style="font-size: 0.9em; color: #666; text-align: center;">Comparison of numerical solutions
-                            showing cell density profiles at t=0.1. (a) FVM solution maintains sharper peaks due to
-                            better conservation properties. (b) MOL solution shows smoother profiles with adaptive time
-                            stepping.</p>
+
+                        <div class="step-card">
+                            <div class="step-header">
+                                <span class="step-number">4</span>
+                                <h4>Boundary Condition Implementation</h4>
+                            </div>
+                            <ul class="step-details">
+                                <li>Ghost cell values for no-flux boundaries:
+                                    \[ u_{k,0} = u_{k,1}, \quad u_{k,N+1} = u_{k,N} \]
+                                </li>
+                                <li>Boundary fluxes:
+                                    \[ F_{k,1/2} = 0, \quad F_{k,N+1/2} = 0 \]
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-header">
+                                <span class="step-number">5</span>
+                                <h4>Temporal Discretization</h4>
+                            </div>
+                            <ul class="step-details">
+                                <li>Time integration: Adaptive BDF2 method</li>
+                                <li>Nonlinear handling: Newton iterations for implicit steps</li>
+                                <li>Stability condition: \(\Delta t \leq \frac{\Delta x^2}{2D_{\text{max}}}\)</li>
+                            </ul>
+                        </div>
                     </div>
-                </section>
+
+                    <h3>Results and Comparison</h3>
+                    <div class="results-grid">
+                        <div class="result-card">
+                            <h4>Relative Errors at Selected Points</h4>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>\(x\) (cm)</th>
+                                        <th>\(u_1\) error (%)</th>
+                                        <th>\(u_2\) error (%)</th>
+                                        <th>\(u_3\) error (%)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>0.0</td>
+                                        <td>0.07</td>
+                                        <td>2.99</td>
+                                        <td>0.02</td>
+                                    </tr>
+                                    <tr>
+                                        <td>0.4</td>
+                                        <td>0.25</td>
+                                        <td>2.77</td>
+                                        <td>0.12</td>
+                                    </tr>
+                                    <tr>
+                                        <td>0.8</td>
+                                        <td>0.59</td>
+                                        <td>1.61</td>
+                                        <td>0.17</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="result-card">
+                            <h4>Key Findings</h4>
+                            <ul>
+                                <li>FVM demonstrates excellent conservation properties</li>
+                                <li>Better captures sharp gradients and maintains physical bounds</li>
+                                <li>Shows good agreement with MOL in smooth solution regions</li>
+                                <li>Recommended for long-term simulations with conservation constraints</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="figure-container"
+                        style="display: flex; justify-content: space-around; flex-wrap: wrap; margin: 20px 0;">
+                        <div class="figure" style="text-align: center; margin: 10px; flex: 1; min-width: 300px;">
+                            <img src="U1_sol.png" alt="FVM Solution"
+                                style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 4px;">
+                            <p class="figure-caption" style="font-size: 0.9em; color: #666; margin-top: 8px;">Figure
+                                1a: FVM Solution</p>
+                        </div>
+                        <div class="figure" style="text-align: center; margin: 10px; flex: 1; min-width: 300px;">
+                            <img src="MOL_sol.jpg" alt="MOL Solution"
+                                style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 4px;">
+                            <p class="figure-caption" style="font-size: 0.9em; color: #666; margin-top: 8px;">Figure
+                                1b: MOL Solution</p>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.9em; color: #666; text-align: center;">Comparison of numerical solutions
+                            showing cell density profiles at t=0.1. (a) FVM solution maintains sharper peaks due to
+                        better conservation properties. (b) MOL solution shows smoother profiles with adaptive time
+                        stepping.</p>
+                </div>
             </section>
 
             <!-- Machine Learning -->
@@ -1125,7 +1122,7 @@
                         </table>
                     </div>
 
-                    <h3>Evolutions of u1, u2, and u3</h3>
+                    <h3>Evolutions of u₁, u₂, and u₃</h3>
                     <div class="row text-center mt-4">
                         <div class="col-md-12">
                             <img src="https://raw.githubusercontent.com/anas-204/pattern_formation_pde_model/main/Solutions/Machine%20Learning%20Solution/deliverables/evolution_of_u1_u2_u3.png"
@@ -1136,31 +1133,35 @@
 
                     <div class="model-container">
                         <div class="model-card">
-                            <h4>Accuracy Comparison with Book Results</h4>
+                            <h4>Relative Errors at Selected Points</h4>
                             <div class="table-responsive">
                                 <table class="table table-striped">
                                     <thead class="table-success">
                                         <tr>
-                                            <th>Variable</th>
-                                            <th>MAX Error (%)</th>
-                                            <th>MIN Error (%)</th>
+                                            <th>x (cm)</th>
+                                            <th>u₁ (cells/mL)</th>
+                                            <th>u₂ (M)</th>
+                                            <th>u₃ (M)</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td>U₁ (cells)</td>
-                                            <td>1.98</td>
-                                            <td>0.04</td>
-                                        </tr>
-                                        <tr>
-                                            <td>U₂ (chemoattractant)</td>
-                                            <td>0.72</td>
-                                            <td>0.36</td>
-                                        </tr>
-                                        <tr>
-                                            <td>U₃ (stimulant)</td>
+                                            <td>0.0</td>
+                                            <td>0.43</td>
+                                            <td>0.65</td>
                                             <td>0.18</td>
-                                            <td>0.01</td>
+                                        </tr>
+                                        <tr>
+                                            <td>0.4</td>
+                                            <td>0.08</td>
+                                            <td>0.45</td>
+                                            <td>0.02</td>
+                                        </tr>
+                                        <tr>
+                                            <td>0.8</td>
+                                            <td>0.46</td>
+                                            <td>0.72</td>
+                                            <td>0.18</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -1215,7 +1216,7 @@
                 <h3>Solution Accuracy Comparison</h3>
                 <p>This section compares the accuracy of our three solution approaches against reference results from
                     literature. Each table shows the maximum and minimum percentage errors for the three system
-                    variables (U1: Cell Density, U2: Chemoattractant, U3: Stimulant) relative to established benchmark
+                    variables (u₁: Cell Density, u₂: Chemoattractant, u₃: Stimulant) relative to established benchmark
                     solutions.</p>
 
                 <div class="results-grid">
@@ -1224,24 +1225,24 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Variable</th>
+                                    <th>Field</th>
                                     <th>MAX Error (%)</th>
                                     <th>MIN Error (%)</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>U1</td>
+                                    <td>u₁</td>
                                     <td>1.98</td>
                                     <td>0.04</td>
                                 </tr>
                                 <tr>
-                                    <td>U2</td>
+                                    <td>u₂</td>
                                     <td>0.72</td>
                                     <td>0.36</td>
                                 </tr>
                                 <tr>
-                                    <td>U3</td>
+                                    <td>u₃</td>
                                     <td>0.18</td>
                                     <td>0.01</td>
                                 </tr>
@@ -1254,24 +1255,24 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Variable</th>
+                                    <th>Field</th>
                                     <th>MAX Error (%)</th>
                                     <th>MIN Error (%)</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>U1</td>
+                                    <td>u₁</td>
                                     <td>x00</td>
                                     <td>x01</td>
                                 </tr>
                                 <tr>
-                                    <td>U2</td>
+                                    <td>u₂</td>
                                     <td>x10</td>
                                     <td>x11</td>
                                 </tr>
                                 <tr>
-                                    <td>U3</td>
+                                    <td>u₃</td>
                                     <td>x20</td>
                                     <td>x21</td>
                                 </tr>
@@ -1284,24 +1285,24 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Variable</th>
+                                    <th>Field</th>
                                     <th>MAX Error (%)</th>
                                     <th>MIN Error (%)</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>U1</td>
+                                    <td>u₁</td>
                                     <td>0.05</td>
                                     <td>0.04</td>
                                 </tr>
                                 <tr>
-                                    <td>U2</td>
+                                    <td>u₂</td>
                                     <td>0.01</td>
                                     <td>0.00</td>
                                 </tr>
                                 <tr>
-                                    <td>U3</td>
+                                    <td>u₃</td>
                                     <td>0.03</td>
                                     <td>0.02</td>
                                 </tr>
@@ -1331,8 +1332,8 @@
                                 <td>Runtime (sec)</td>
                                 <td>1.826</td>
                                 <td>6.446</td>
-                                <td>x0</td>
-                                <td>y0</td>
+                                <td>1.132</td>
+                                <td>0.9946</td>
                             </tr>
                             <tr>
                                 <td>Problem Size (no. of ODEs)</td>
@@ -1345,15 +1346,15 @@
                                 <td>Time per Equation (s/equ)</td>
                                 <td>0.0119</td>
                                 <td>0.0452</td>
-                                <td>x2</td>
-                                <td>y2</td>
+                                <td>0.0074</td>
+                                <td>0.0065</td>
                             </tr>
                             <tr>
                                 <td>Function Evaluations</td>
                                 <td>1052</td>
                                 <td>z</td>
                                 <td>x3</td>
-                                <td>y3</td>
+                                <td>3504</td>
                             </tr>
                         </tbody>
                     </table>

@@ -413,10 +413,10 @@ print_relative_errors(("Book Results", book_results), ("Simulation Results", sim
 
 | Metric | learning-based Simulation | Book Implementation |
 | ------ | ------------------------- | ------------------- |
-| *Runtime in seconds (real)* | 6.922 | 1.826 |
-| *Problem Size (# of Equations)* | 153 ODEs (3 fields x 51 points) | 153 ODEs |
+| *Runtime in seconds (real)* | 6.446 | 1.826 |
+| *Problem Size (no. of Equations)* | 153 ODEs (3 fields x 51 points) | 153 ODEs |
 | *Time per Equations (s/equ)* | 0.0452 | 0.0119 |
-| *Function Evaluations* | y | 1052 |
+| *Function Evaluations* | 3717 | 1052 |
 
 ## Suggestions for improvements and future work
 

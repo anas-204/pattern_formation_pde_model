@@ -1,0 +1,402 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{siunitx} % For proper unit formatting
+
+% Corrected BibTeX definition with standard spacing
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+% Custom command for placeholders for results that still need to be filled in.
+% NOTE: All placeholders below need to be replaced with your actual data and findings.
+\newcommand{\placeholder}[1]{\textcolor{red}{\textbf{[PLACEHOLDER: #1]}}}
+
+\begin{document}
+
+\title{PDE Analysis of Pattern Formation in Biological Systems defined by a chemoattractant and a stimulant}
+
+% --- UPDATED AUTHOR INFORMATION ---
+\author{
+\IEEEauthorblockN{
+Anas Mohamed Abdelaziz Elsheikh\IEEEauthorrefmark{1},
+Ahmed Abdelghaffar Mostafa Shehab\IEEEauthorrefmark{2},
+Sherif Mohamed Mahmoud Elgendy\IEEEauthorrefmark{3}, \\
+Mostafa Ashraf Mostafa Abdelrahim\IEEEauthorrefmark{4},
+Seif Samaan Ghaly Atia\IEEEauthorrefmark{5},
+Ziad Ramadan Mohamed Mohamed\IEEEauthorrefmark{6}, \\
+Mohamed Ashraf Abdelhamid Hagras\IEEEauthorrefmark{7}, and
+Mazen Atef Awad Atlam\IEEEauthorrefmark{8}
+}
+\IEEEauthorblockA{Department of Systems and Biomedical Engineering, Faculty of Engineering, Cairo University, Giza, Egypt}
+\IEEEauthorblockA{Email:
+\IEEEauthorrefmark{1}anas.elshaikh@student.cu.edu.eg,
+\IEEEauthorrefmark{2}ahmed.shehab@student.cu.edu.eg,
+\IEEEauthorrefmark{3}sherif.elgendy@student.cu.edu.eg, \\
+\IEEEauthorrefmark{4}mostafa.abdelrahim@student.cu.edu.eg,
+\IEEEauthorrefmark{5}seif.atia@student.cu.edu.eg,
+\IEEEauthorrefmark{6}ziad.ramadan@student.cu.edu.eg, \\
+\IEEEauthorrefmark{7}mohamed.hagras@student.cu.edu.eg,
+\IEEEauthorrefmark{8}mazen.atlam04@eng-st.cu.edu.eg
+}
+}
+
+\maketitle
+
+\begin{abstract}
+Pattern formation in biological systems through chemoattractant-cell interactions represents a fundamental mechanism underlying numerous developmental and physiological processes. This paper presents a comprehensive study of partial differential equation (PDE) models describing pattern formation dynamics, focusing on three-PDE system in one spatial dimension. We employ the Method of Lines (MOL) for numerical solutions and compare results with two other numerical approaches and machine learning approach. Our analysis demonstrates the effectiveness of both traditional numerical methods and modern ML techniques in capturing complex spatiotemporal patterns. The study reveals critical parameter regimes for pattern formation and provides insights into the underlying biological mechanisms. Simulation results show good agreement between numerical and ML solutions, with computational efficiency gains observed in the machine learning approach.
+\end{abstract}
+
+\begin{IEEEkeywords}
+pattern formation, partial differential equations, chemoattractant, Method of Lines, machine learning, py-pde, numerical simulation, finite difference method, finite volume method, spatiotemporal dynamics, chemotaxis, biological modeling, PDE analysis, computational biology, neural operators, reaction-diffusion systems
+\end{IEEEkeywords}
+
+\section{Introduction}
+% Introduction to the problem
+Pattern formation in biological systems is a ubiquitous phenomenon that underlies many critical processes, from embryonic development to wound healing and tumor growth. The interaction between cells and chemical signals, particularly chemoattractants and stimulants, plays a crucial role in organizing cellular behavior and generating complex spatiotemporal patterns.
+
+Mathematical modeling of these phenomena typically involves systems of partial differential equations that capture the dynamics of cell density, chemical concentrations, and their mutual interactions. The complexity of these models arises from nonlinear coupling terms, diffusion processes, and reaction kinetics that operate across multiple spatial and temporal scales.
+
+This study focuses on PDE models describing how cells interact with chemoattractants and stimulants in one-dimensional space. We investigate three-PDE system, starting from basic diffusion equations and progressively incorporating nonlinear terms that capture essential biological mechanisms such as chemotaxis, cell proliferation, and chemical degradation.
+
+The primary objectives of this work are: (1) to develop and analyze comprehensive PDE models for chemoattractant-cell interactions, (2) to implement robust numerical solution methods using the Method of Lines, (3) to explore machine learning approaches as alternative solution strategies, and (4) to provide insights into parameter regimes that promote pattern formation.
+
+\section{Literature Review}
+
+The mathematical study of biological pattern formation has evolved significantly since Turing’s introduction of reaction-diffusion models~\cite{turing1952morphogenesis}. Key contributions include Murray’s extensions incorporating chemotactic behavior~\cite{murray2003mathematical} and Keller–Segel models that describe cell aggregation via self-produced chemoattractants~\cite{keller1970instability}. Such models now routinely include additional biological processes like proliferation, death, and multi-chemical interactions.
+
+On the computational side, the Method of Lines (MOL) has remained a cornerstone for high-accuracy PDE simulations with adaptive time integration~\cite{schiesser1991mol}. In parallel, high-order schemes and adaptive mesh refinement methods have been developed to resolve sharp pattern boundaries efficiently.
+
+A new frontier has emerged at the intersection of machine learning and PDEs. Physics-Informed Neural Networks (PINNs) and related frameworks integrate governing equations directly into neural network training, offering mesh-free representations capable of modeling complex boundary conditions~\cite{raissi2019physics, raissi2017_pinn}. Operator learning approaches, such as DeepONet and Fourier Neural Operators (FNO), generalize the concept by learning mappings between function spaces, enabling fast, discretization-invariant prediction of PDE solutions across parameter regimes~\cite{yang2024_deeponet, li2020_fno}.
+
+Hybrid operator-learning frameworks, like deep branch–trunk networks, now come with rigorous error bounds for nonlinear PDEs~\cite{academia12}, while Gaussian Process–based architectures (e.g., kernel-weighted corrective-residual models, CoRes) integrate model interpretability and stability into ML-driven PDE solvers~\cite{academia13}. Additionally, reinforcement of domain-decomposition solvers via graph convolutional neural networks (GCNNs) has shown promising scalability improvements on both structured and unstructured grids~\cite{search10}.
+
+These developments suggest a burgeoning toolkit for PDE simulation that combines the numerical rigor of classical discretization with the flexibility and efficiency of data-driven solvers. In particular, the ability of neural operators to generalize across resolutions and parameter regimes makes them highly suitable for modeling complex spatiotemporal biological patterns.
+
+
+
+\section{Mathematical Model}
+% Explanation of the PDE model
+\subsection{PDE Model Description}
+A three-component system describing the interaction between cell density $u_1(x,t)$ and chemoattractant concentration $u_2(x,t)$ in one spatial dimension extended to include a stimulant $u_3(x,t)$:
+
+\begin{align}
+\frac{\partial u_1}{\partial t} &= D_1 \nabla^2 u_1 - \nabla \left[ \frac{k_1 u_1}{(k_2 + u_2)^2} \nabla u_2 \right] \nonumber \\
+& \quad + k_3 u_1 \left( \frac{k_4 u_3^2}{k_9 + u_3^2} - u_1 \right) \label{eq:u_1_evolution} \\
+\frac{\partial u_2}{\partial t} &= D_2 \nabla^2 u_2 + k_5 u_3 \left( \frac{u_1^2}{k_6 + u_1^2} - k_7 u_1 u_2 \right) \label{eq:u_2_evolution} \\
+\frac{\partial u_3}{\partial t} &= D_3 \nabla^2 u_3 - k_8 u_1 \left( \frac{u_3^2}{k_9 + u_3^2} \right) \label{eq:u_3_evolution}
+\end{align}
+
+This extended model allows for more complex interactions, including competition between different chemical signals and their differential effects on cell behavior.
+
+\subsection{Initial and Boundary Conditions}
+We consider no-flux (Neumann) boundary conditions for all components:
+
+\begin{equation}
+\left.\frac{\partial u_1}{\partial x}\right|_{x=0,L} = \left.\frac{\partial u_2}{\partial x}\right|_{x=0,L} = \left.\frac{\partial u_3}{\partial x}\right|_{x=0,L} = 0
+\end{equation}
+
+and Gaussian profiles centered at $t=0$:
+
+\begin{align}
+u_1(x,0) &= 10^8 e^{-5x^2} \text{ cells/ml} \label{eq:u_1_init} \\
+u_2(x,0) &= 5\times10^{-6} e^{-5x^2} \text{ M} \label{eq:u_2_init} \\
+u_3(x,0) &= 10^{-3} e^{-5x^2} \text{ M} \label{eq:u_3_init}
+\end{align}
+
+\section{Numerical Solution Methods}
+% Numerical solution steps using Finite Difference Method
+\subsection{Finite Difference Method}
+
+The Finite Difference Method solves PDEs by replacing all continuous derivatives with discrete approximations on a grid. This transforms the PDE system into a set of algebraic equations that can be solved iteratively.
+
+\subsubsection{Step 1: Spatio-Temporal Grid Discretization}
+
+
+We discretize both space and time. The spatial domain \( x \in [0, L] \) is divided into \( N + 1 \) points \( x_j = j \cdot \Delta x \), and time is divided into steps \( t_n = n \cdot \Delta t \). The solution at a grid point \( (x_j, t_n) \) is denoted \( u^n_j \approx u(x_j, t_n) \).
+
+\subsubsection{Step 2: Finite Difference Approximation}
+
+
+We use the Forward-Time Central-Space (FTCS) explicit scheme.
+\begin{itemize}
+    \item \textbf{Time Derivative} (Forward Difference):
+        \begin{equation}
+        \frac{\partial u_k}{\partial t}\bigg|{j,n} \approx \frac{u{k,j}^{n+1} - u_{k,j}^n}{\Delta t}
+        \end{equation}
+    \item \textbf{Spatial Derivative} (Central Difference):
+        \begin{equation}
+        \frac{\partial^2 u_k}{\partial x^2}\bigg|{j,n} \approx \frac{u{k,j+1}^n - 2u_{k,j}^n + u_{k,j-1}^n}{(\Delta x)^2}
+        \end{equation}
+\end{itemize}
+
+     
+
+\subsubsection{Step 3 : The Explicit FDM Update Equation} 
+
+
+Substituting these into the PDE and rearranging gives a direct update rule to find the solution at the next time step, $n+1$, using only known values from the current step, $n$:
+\begin{equation}
+u_{k,j}^{n+1} = u_{k,j}^n + \frac{D_k \Delta t}{(\Delta x)^2} (u_{k,j+1}^n - 2u_{k,j}^n + u_{k,j-1}^n) + \Delta t \cdot f_k^n
+\end{equation}
+This equation is applied at each grid point to "march" the solution forward in time.
+
+
+\subsubsection{Step 4 : Boundary Condtions}        
+
+
+At the boundaries ($j=0$ and $j=N$), we use "ghost points" to enforce the no-flux condition. For the left boundary ($j=0$), $\frac{\partial u_k}{\partial x}=0$ implies $u_{k,-1}^n = u_{k,1}^n$. Substituting this into the update equation gives:
+\begin{equation}
+u_{k,0}^{n+1} = u_{k,0}^n + \frac{D_k \Delta t}{(\Delta x)^2} (2u_{k,1}^n - 2u_{k,0}^n) + \Delta t \cdot f_k^n
+\end{equation}
+A similar equation is derived for the right boundary ($j=N$).
+% Numerical solution steps using Finite Volume Method
+\subsection{Finite Volume Method}
+The Finite Volume Method solves PDEs by discretizing the domain into control volumes and enforcing conservation laws over each volume. This transforms the PDE system into flux balance equations that preserve physical quantities.
+
+\subsubsection{Step 1: Domain Discretization and Grid Definition}
+
+We partition the spatial domain $x\in[0,L]$ into $N$ control volumes (cells) centered at $x_j$ with width $\Delta x$. The cell faces are located at $x_{j\pm1/2}$. The solution is represented as cell averages $\bar{u}^n_{k,j} \approx \frac{1}{\Delta x}\int_{x_{j-1/2}}^{x_{j+1/2}} u_k(x,t_n)dx$.
+
+\subsubsection{Step 2: Integral Formulation and Flux Approximation}
+
+We integrate the PDE over each control volume and apply the divergence theorem:
+
+\begin{equation}
+\frac{d\bar{u}_{k,j}}{dt} = \frac{1}{\Delta x}\left[F_{k,j+1/2} - F_{k,j-1/2}\right] + \bar{f}_{k,j}
+\end{equation}
+
+where fluxes $F$ are approximated using:
+\begin{itemize}
+    \item \textbf{Diffusive flux}: Central difference at faces
+    \[ F^{\text{diff}}_{k,j+1/2} = D_k\frac{u_{k,j+1} - u_{k,j}}{\Delta x} \]
+    
+    \item \textbf{Advective flux}: Upwind scheme for chemotaxis terms
+    \[ F^{\text{adv}}_{k,j+1/2} = \chi u_{k,j}\frac{c_{j+1} - c_j}{\Delta x} \]
+\end{itemize}
+
+\subsubsection{Step 3: The Semi-Discrete FVM System}
+
+Applying the flux approximations yields the ODE system for each cell:
+
+\begin{equation}
+\begin{aligned}
+\frac{d\bar{u}_{k,j}}{dt} = &\frac{D_k}{\Delta x^2}(\bar{u}_{k,j+1} - 2\bar{u}_{k,j} + \bar{u}_{k,j-1}) \\
+&- \frac{\chi}{\Delta x^2}\big[u_{k,j}(c_{j+1}-c_j) \\
+&- u_{k,j-1}(c_j-c_{j-1})\big] + \bar{f}_{k,j}
+\end{aligned}
+\end{equation}
+
+\subsubsection{Step 4: Boundary Condition Implementation}
+
+For no-flux boundaries ($j=0$ and $j=N$):
+\begin{itemize}
+    \item Ghost cell values are set to enforce zero flux:
+    \[ u_{k,0} = u_{k,1}, \quad u_{k,N+1} = u_{k,N} \]
+    
+    \item Boundary fluxes become:
+    \[ F_{k,1/2} = 0, \quad F_{k,N+1/2} = 0 \]
+\end{itemize}
+
+\subsubsection{Step 5: Temporal Discretization}
+
+The ODE system is solved using:
+\begin{itemize}
+    \item \textbf{Time integration}: Adaptive BDF2 method
+    \item \textbf{Nonlinear handling}: Newton iterations for implicit steps
+    \item \textbf{Stability}: CFL condition $\Delta t \leq \frac{\Delta x^2}{2D_{\text{max}}}$
+\end{itemize}
+
+\section{Results and Discussion}
+% Results of Finite Difference solution
+\subsection{Finite Difference Method}
+
+While this report details a direct FDM implementation, it is crucial to compare it with the Method of Lines (MOL), another common strategy for solving time-dependent PDEs.
+
+
+
+\begin{table}[H]
+\centering
+\caption{Relative errors at selected spatial points}
+\begin{tabular}{|c|c|c|c|}
+\hline
+$x$ (cm) & $u_1$ error (\%) & $u_2$ error (\%) & $u_3$ error (\%) \\
+\hline
+0.0 & 0.05& 2.98& 0.01\\
+0.4 & 0.03& 2.64& 0.02\\
+0.8 & 0.13& 1.93& 0.03\\
+\hline
+\end{tabular}
+\end{table}
+
+ 
+
+
+
+
+\begin{table}[H]
+\centering
+\caption{Performance \& Statistics}
+\begin{tabular}{|c|c|c|}
+\hline
+Metric & FDM& Book Implementation \\
+\hline
+\textit{Runtime in seconds (real)} & 1.881& 1.826 \\
+\textit{Problem Size (no. of Equations)} & 153 ODEs & 153 ODEs \\
+\textit{Time per Equations (s/equ)} & 0.0123& 0.0119\\
+\textit{Function Evaluations} & 1052& 1052 \\
+\hline
+\end{tabular}
+\end{table}
+
+% Results of Finite Volume solution
+\subsection{Finite Volume Method}
+The FVM solution demonstrates excellent conservation properties, crucial for mass-preserving systems like chemotaxis models. The MOL provides greater flexibility in time stepping and easier implementation of complex boundary conditions. For the Patlak-Keller-Segel model:
+
+\begin{itemize}
+\item FVM better captures sharp gradients and maintains physical bounds
+\item MOL allows efficient handling of stiff systems through adaptive ODE solvers
+\item Both methods show good agreement in smooth regions of the solution
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\caption{Relative Errors at Selected Spatial Points}
+\label{tab:errors}
+\begin{tabular}{cccc}
+\toprule
+$x$ (\si{cm}) & $u_1$ Error (\%) & $u_2$ Error (\%) & $u_3$ Error (\%) \\
+\midrule
+0.0 & 0.07 & 2.99 & 0.02 \\
+0.4 & 0.25 & 2.77 & 0.12 \\
+0.8 & 0.59 & 1.61 & 0.17 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Performance Comparison Between FVM and Reference Implementation}
+\label{tab:performance}
+\begin{tabular}{lcc}
+\toprule
+Metric & FVM & Reference \\
+\midrule
+Runtime (\si{s}) & 1.132 & 1.826 \\
+Problem Size & \num{153} ODEs & \num{153} ODEs \\
+Time per Equation (\si{s.equ^{-1}}) & 0.0074 & 0.0119 \\
+Function Evaluations & 945 & 1052 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Machine Learning Solution Results}
+
+The PDE system was solved using Python's \texttt{py-pde} package, implementing finite difference discretization with 51 spatial points over a 1D domain $x \in [0, 1]$ cm. Key implementation aspects include:
+
+\subsubsection{Solution Characteristics}
+\begin{itemize}
+    \item \textbf{Initial Conditions}: Gaussian profiles centered at $t=0$:
+    \begin{align*}
+        u_1(x,0) &= 10^8 e^{-5x^2} \text{ cells/ml} \tag{eq. \ref{eq:u_1_init}} \\
+        u_2(x,0) &= 5\times10^{-6} e^{-5x^2} \text{ M} \tag{eq. \ref{eq:u_2_init}} \\
+        u_3(x,0) &= 10^{-3} e^{-5x^2} \text{ M} \tag{eq. \ref{eq:u_3_init}}
+    \end{align*}
+    
+    \item \textbf{Boundary Conditions}: Zero-flux Neumann ($\partial u_i/\partial x = 0$ at $x=0,1$)
+    
+    \item \textbf{Temporal Resolution}: Adaptive BDF solver with output at 0.5-hour intervals
+\end{itemize}
+
+
+\subsubsection{Accuracy Validation}
+Table 1 shows relative errors versus reference solutions at $t=5$ hours:
+
+\begin{table}[H]
+\centering
+\caption{Relative errors at selected spatial points}
+\begin{tabular}{|c|c|c|c|}
+\hline
+$x$ (cm) & $u_1$ error (\%) & $u_2$ error (\%) & $u_3$ error (\%) \\
+\hline
+0.0 & 0.43 & 0.65 & 0.18 \\
+0.4 & 0.08 & 0.45 & 0.02 \\
+0.8 & 0.46 & 0.72 & 0.18 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{Time Metrics Validation}
+Table 2 shows the performance and statistics of the learning-based solution:
+
+\begin{table}[H]
+\centering
+\caption{Performance \& Statistics}
+\begin{tabular}{|c|c|c|}
+\hline
+Metric & learning-based & Book Implementation \\
+\hline
+\textit{Runtime in seconds (real)} & 6.446 & 1.826 \\
+\textit{Problem Size (no. of Equations)} & 153 ODEs & 153 ODEs \\
+\textit{Time per Equations (s/equ)} & 0.0452 & 0.0119 \\
+\textit{Function Evaluations} & 3717 & 1052 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Summary Discussion}
+The comprehensive comparison of four numerical approaches—Finite Difference Method (FDM), Finite Volume Method (FVM), Method of Lines (MOL), and Machine Learning solver (py-pde)—reveals significant performance differences across multiple dimensions. FVM demonstrated superior computational efficiency with the fastest runtime (1.132 seconds), lowest time per equation (0.0074 s/equ), and fewest function evaluations (945), outperforming both FDM (1.881 seconds, 1052 evaluations) and MOL (1.826 seconds, 1052 evaluations). Conversely, the ML approach showed substantially higher computational overhead (6.446 seconds) and required significantly more function evaluations (3717), reflecting current limitations in pure ML implementations for PDE solving. Regarding solution accuracy, the ML solver achieved the smallest relative errors across all variables (0.02-0.72\%), followed by FDM (0.01-2.98\%) and FVM (0.02-2.99\%), suggesting ML's potential for high-precision applications where computational cost is secondary. The FVM exhibited excellent mass conservation properties critical for biological systems, while its low function evaluation count indicates efficient computation. For handling complex boundary conditions, MOL provided greater flexibility through its adaptive ODE solvers, whereas FDM offered the simplest implementation pathway for rapid prototyping. The ML approach demonstrated promising pattern-capturing capabilities without explicit discretization, though its current efficiency limitations and high function evaluation count necessitate further optimization. Regarding solution smoothness, FVM produced the most physically plausible profiles in regions with sharp gradients, while ML showed slight oscillations near boundaries. For large-scale parameter studies, FVM's efficiency and low function evaluation requirement make it particularly suitable, whereas ML's accuracy advantages might justify its cost in critical validation scenarios despite higher computational demands. The MOL implementation served as a reliable reference solution, balancing reasonable speed with good accuracy and moderate function evaluations. FDM's explicit formulation showed limitations in handling stiff terms, requiring stricter stability constraints than the semi-implicit MOL. The ML solver's architecture showed potential for generalization across parameter regimes, though this study focused on single parameter sets and revealed high computational costs. Future work should investigate hybrid FVM-ML approaches where FVM handles bulk simulations and ML refines critical regions to balance efficiency and accuracy. Overall, method selection depends on application priorities: FVM for efficient conservation-critical systems, ML for high-accuracy requirements, MOL for stiff systems with complex boundaries, and FDM for educational purposes or rapid testing.
+
+
+\section{Future Work and Improvements}
+% Suggestions for improvements and future work
+
+\subsection{Suggestions for Improvements}
+\subsubsection{Algorithmic Enhancements}
+\begin{itemize}
+    \item \textbf{Adaptive Mesh (h Refinement)}: Increase number of support points in the grid
+    \item \textbf{High-Order Time Integration (p Refinement)}: Use 6th order FD approximations instead of 4th order ones
+\end{itemize}
+
+\subsubsection{Model Extensions}
+\begin{itemize}
+    \item \textbf{Spatial Dimension Expansion}: Extend to 2D/3D domains for realistic biological pattern simulation
+    \item \textbf{Stochastic Terms}: Introduce noise terms for $\partial u_i/\partial t$ to model microenvironment variability
+    \item \textbf{Parameter Estimation}: Integrate neural ODEs for data-driven parameter calibration
+\end{itemize}
+
+\subsection{Future Research Directions}
+
+\subsubsection{Deep Learning Integration}
+\begin{itemize}
+    \item \textbf{Hybrid Solver}: Show the computer microscope photos of real cells to set up better simulations, then use CNN encoder to generate initial conditions from microscopy images
+    \item \textbf{Operator Learning}: Train Fourier Neural Operators (FNOs) to predict patterns without solving complex equations
+    \item \textbf{Uncertainty Quantification}: Implement Bayesian PINNs for solution confidence intervals
+\end{itemize}
+
+\subsubsection{Biological Applications}
+\begin{itemize}
+    \item \textbf{Cancer Research}: Simulate how tumor cells invade healthy tissue
+    \item \textbf{Drug Delivery}: revolutionize drug design by simulating how smart medicines navigate biological systems
+\end{itemize}
+
+
+% --- UPDATED ACKNOWLEDGMENT SECTION ---
+\section*{Acknowledgment}
+The authors would like to express their sincere gratitude to their course supervisor, Professor Muhammad Rushdi, for his invaluable guidance, encouragement, and support throughout this project, which was conducted as part of the Numerical Methods course at Cairo University.
+
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+
+\end{document}

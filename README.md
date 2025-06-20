@@ -11,12 +11,14 @@ This repository contains computational models and simulations for studying patte
 
 ## GitHub Page
 Explore model explanation, different solution methods and project documentation:
+
 👉 [Pattern Formation Project Website](https://anas-204.github.io/pattern_formation_pde_model)
 
 ## Presentation Slides
 Access our comprehensive project presentation:  
+
 📊 [Pattern Formation Project Presentation](https://www.canva.com/design/DAGqeOWM2lk/TtnQbIDrgQZcY587tOqQKg/edit?utm_content=DAGqeOWM2lk&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)  
-*Contains project overview, methodology, results, and visualizations*
+*Contains the problem overview, methodology, literature review, methods explanation, results, comparison summary, suggestions for improvement, and future work*
 
 ## Team Members
 
@@ -30,6 +32,9 @@ Access our comprehensive project presentation:
 | Ziad Ramadan Mohamed Mohamed        | 9230395 |
 | Mohamed Ashraf Abdelhamid Hagras    | 9230739 |
 | Mazen Atef Awad Atlam               | 9230716 |
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss proposed changes.

@@ -208,15 +208,6 @@
                 font-size: 0.9rem;
             }
 
-            .equation {
-                background-color: #f8f9fa;
-                padding: 1.5rem;
-                margin: 1.5rem 0;
-                border-radius: 4px;
-                overflow-x: auto;
-                font-family: 'Source Code Pro', monospace;
-            }
-
             .equation-title {
                 font-weight: 500;
                 margin-bottom: 0.5rem;
@@ -477,6 +468,46 @@
                 left: -1.5rem;
                 font-size: 1.2rem;
             }
+
+             .key-findings-card {
+                background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+                border-radius: 8px;
+                padding: 1.5rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+                border-left: 4px solid var(--success);
+            }
+
+            .key-findings-card h4 {
+                color: var(--success);
+                margin-bottom: 1rem;
+                display: flex;
+                align-items: center;
+            }
+
+            .key-findings-card h4 i {
+                margin-right: 10px;
+            }
+
+            .key-findings-list {
+                list-style-type: none;
+                padding-left: 0;
+            }
+
+            .key-findings-list li {
+                padding: 0.5rem 0;
+                position: relative;
+                padding-left: 1.5rem;
+            }
+
+            .key-findings-list li:before {
+                content: "•";
+                color: var(--success);
+                font-weight: bold;
+                position: absolute;
+                left: 0;
+                font-size: 1.2rem;
+            }
+
         </style>
     </head>
 
@@ -1170,44 +1201,17 @@
                             </div>
                         </div>
 
-                        <div class="model-card">
-                            <h4>Computational Performance</h4>
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead class="table-success">
-                                        <tr>
-                                            <th>Metric</th>
-                                            <th>Value</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Total Runtime</td>
-                                            <td>6.446 seconds</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Number of ODEs Solved</td>
-                                            <td>153 equations</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Time per Equation</td>
-                                            <td>0.0452 seconds</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Function Evaluations</td>
-                                            <td>3717</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div class="model-card key-findings-card">
+                            <h4><i class="fas fa-lightbulb"></i> Key Findings</h4>
+                            <ul class="key-findings-list">
+                                <li>The ML approach achieves high accuracy (≤1.98% error) while efficiently solving 153 coupled ODEs</li>
+                                <li>Pattern formation dynamics are accurately captured across all three fields (cell density, chemoattractant, stimulant)</li>
+                                <li>Solution snapshots stored every 30 minutes enable detailed temporal analysis</li>
+                                <li>The method demonstrates robustness in handling complex biological interactions</li>
+                                <li>Good agreement with traditional numerical methods validates the approach</li>
+                                <li>Significant potential for scaling to higher-dimensional problems</li>
+                            </ul>
                         </div>
-                    </div>
-
-                    <div class="alert alert-info mt-4">
-                        <strong>Key Insight:</strong> The ML approach achieves high accuracy (≤1.98% error) while
-                        efficiently solving
-                        153 coupled ODEs derived from PDE discretization, with solution snapshots stored every 30
-                        minutes.
                     </div>
                 </div>
             </section>

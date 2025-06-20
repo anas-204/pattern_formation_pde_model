@@ -165,15 +165,15 @@ t_hours = t_eval / 3600
 # Plot the FVM solutions
 plot_fvm_solution(x_centers, t_hours, u1_fvm, 
              'Cell Density $u_1(x,t)$ (FVM)', 
-             '$u_1$ [cells/ml]', 'u1_fvm_solution.png')
+             '$u_1$ [cells/ml]', 'deliverables/u1_fvm_solution.png')
 
 plot_fvm_solution(x_centers, t_hours, u2_fvm, 
              'Chemoattractant Concentration $u_2(x,t)$ (FVM)', 
-             '$u_2$ [M]', 'u2_fvm_solution.png')
+             '$u_2$ [M]', 'deliverables/u2_fvm_solution.png')
 
 plot_fvm_solution(x_centers, t_hours, u3_fvm, 
              'Stimulant Concentration $u_3(x,t)$ (FVM)', 
-             '$u_3$ [M]', 'u3_fvm_solution.png')
+             '$u_3$ [M]', 'deliverables/u3_fvm_solution.png')
 
 # Print computational statistics
 print(f"Solution computed with {sol_fvm.nfev} function evaluations")
